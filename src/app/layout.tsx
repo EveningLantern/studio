@@ -4,12 +4,12 @@ import type { Metadata } from 'next';
 import { Poppins, Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Footer } from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { VerticalHeader } from '@/components/VerticalHeader';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Logo } from '@/components/Logo';
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
@@ -61,9 +61,12 @@ export default function RootLayout({
         )}
       >
         <div className="relative flex min-h-dvh flex-col bg-background">
+           <div className="fixed top-4 left-4 z-50">
+              <Logo />
+            </div>
           <div className="flex flex-1">
             <VerticalHeader />
-            <main className="flex-1 overflow-hidden p-4 md:p-6 lg:p-8">
+            <main className="flex-1 overflow-hidden p-4 md:p-6 lg:p-8 ml-20">
               <div
                 key={pageKey}
                 className={cn(

@@ -30,12 +30,9 @@ export function VerticalHeader() {
     <>
       {/* Desktop Sidebar */}
       <TooltipProvider>
-        <header className="sticky top-0 z-50 hidden h-screen flex-col items-center p-4 md:flex">
-          <div className="rounded-2xl glassmorphism w-full h-full flex flex-col items-center p-4">
-            <div className="mb-8">
-              <Logo />
-            </div>
-            <nav className="flex flex-col items-center gap-4">
+        <header className="fixed top-1/2 left-4 -translate-y-1/2 z-50 hidden flex-col items-center md:flex">
+          <div className="rounded-full glassmorphism flex flex-col items-center p-2 gap-2">
+            <nav className="flex flex-col items-center gap-2">
               {NAV_LINKS.map((link) =>
                 link.subLinks ? (
                   <DropdownMenu key={link.label}>
@@ -45,7 +42,7 @@ export function VerticalHeader() {
                           <Button
                             variant={pathname.startsWith(link.href) ? 'default' : 'ghost'}
                             size="icon"
-                            className="rounded-full transition-all hover:shadow-glow hover:bg-primary/20"
+                            className="rounded-full transition-all hover:shadow-glow hover:bg-primary/20 w-12 h-12"
                           >
                             <link.icon />
                           </Button>
@@ -55,7 +52,7 @@ export function VerticalHeader() {
                         <p>{link.label}</p>
                       </TooltipContent>
                     </Tooltip>
-                    <DropdownMenuContent side="right" className="glassmorphism">
+                    <DropdownMenuContent side="right" className="glassmorphism ml-2">
                       {link.subLinks.map((subLink) => (
                         <DropdownMenuItem key={subLink.label} asChild>
                           <Link href={subLink.href}>{subLink.label}</Link>
@@ -70,7 +67,7 @@ export function VerticalHeader() {
                         asChild
                         variant={pathname === link.href ? 'default' : 'ghost'}
                         size="icon"
-                        className="rounded-full transition-all hover:shadow-glow hover:bg-primary/20"
+                        className="rounded-full transition-all hover:shadow-glow hover:bg-primary/20 w-12 h-12"
                       >
                         <Link href={link.href}>
                           <link.icon />
