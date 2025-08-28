@@ -70,13 +70,15 @@ export default function RootLayout({
               <div
                 key={pageKey}
                 className={cn(
-                  'h-full w-full rounded-2xl glassmorphism shadow-2xl shadow-primary/10 cut-corner',
+                  'h-full w-full rounded-2xl glassmorphism shadow-2xl shadow-primary/10',
                   animationClass
                 )}
               >
-                <ScrollArea className="h-full w-full rounded-2xl">
-                  {children}
-                </ScrollArea>
+                <div className="cut-corner h-full w-full">
+                  <ScrollArea className="h-full w-full rounded-2xl">
+                    {children}
+                  </ScrollArea>
+                </div>
               </div>
             </main>
           </div>

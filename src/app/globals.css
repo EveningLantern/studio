@@ -91,7 +91,7 @@
     left: -50px;
     width: 100px;
     height: 100px;
-    background-color: hsl(var(--background));
+    background: inherit;
     transform: rotate(45deg);
     z-index: 10;
   }
