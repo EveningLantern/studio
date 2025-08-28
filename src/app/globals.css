@@ -80,6 +80,22 @@
     animation: page-out 0.75s cubic-bezier(0.3, 0.8, 0.2, 1) forwards;
   }
 
+  .cut-corner {
+    position: relative;
+    overflow: hidden;
+  }
+  .cut-corner::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 100px;
+    height: 100px;
+    background-color: hsl(var(--background));
+    transform: rotate(45deg);
+    z-index: 10;
+  }
+
   @keyframes page-in {
     0% {
       opacity: 0;

@@ -70,7 +70,7 @@ export default function RootLayout({
               <div
                 key={pageKey}
                 className={cn(
-                  'h-full w-full rounded-2xl glassmorphism shadow-2xl shadow-primary/10',
+                  'h-full w-full rounded-2xl glassmorphism shadow-2xl shadow-primary/10 cut-corner',
                   animationClass
                 )}
               >
