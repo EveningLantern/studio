@@ -43,13 +43,13 @@ export function Footer() {
         </div>
 
         {/* Footer Links & Info */}
-        <div className="mt-12 grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-5">
-          <div className="col-span-2 lg:col-span-1">
+        <div className="mt-12 grid grid-cols-1 gap-8 text-center sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 sm:text-left">
+          <div className="col-span-1 lg:col-span-1 sm:col-span-2 mx-auto sm:mx-0">
             <Logo />
             <p className="mt-4 text-sm text-muted-foreground">Engineering the Digital Future.</p>
           </div>
 
-          <div>
+          <div className="col-span-1">
             <h3 className="font-headline font-semibold">Services</h3>
             <ul className="mt-4 space-y-2">
               {serviceLinks?.map((link) => (
@@ -62,7 +62,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="col-span-1">
             <h3 className="font-headline font-semibold">Company</h3>
             <ul className="mt-4 space-y-2">
               {companyLinks.map((link) => (
@@ -75,18 +75,18 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-1 sm:col-span-2 md:col-span-1">
             <h3 className="font-headline font-semibold">Contact Us</h3>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
+              <li className="flex items-start gap-2 justify-center sm:justify-start">
                 <MapPin className="mt-1 h-4 w-4 flex-shrink-0 text-primary" />
                 <span>{CONTACT_DETAILS.address}</span>
               </li>
-              <li className="flex items-center gap-2">
+              <li className="flex items-center gap-2 justify-center sm:justify-start">
                 <Phone className="h-4 w-4 flex-shrink-0 text-primary" />
                 <span>{CONTACT_DETAILS.phone}</span>
               </li>
-              <li className="flex items-center gap-2">
+              <li className="flex items-center gap-2 justify-center sm:justify-start">
                 <Mail className="h-4 w-4 flex-shrink-0 text-primary" />
                 <span>{CONTACT_DETAILS.email}</span>
               </li>
