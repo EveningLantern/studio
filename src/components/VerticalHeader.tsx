@@ -25,6 +25,7 @@ import { useState } from 'react';
 export function VerticalHeader() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isServicesMenuOpen, setServicesMenuOpen] = useState(false);
 
   return (
     <>
@@ -35,11 +36,13 @@ export function VerticalHeader() {
             <nav className="flex flex-col items-center gap-2">
               {NAV_LINKS.map((link) =>
                 link.subLinks ? (
-                  <DropdownMenu key={link.label}>
+                  <DropdownMenu key={link.label} open={isServicesMenuOpen} onOpenChange={setServicesMenuOpen}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <DropdownMenuTrigger asChild>
                           <Button
+                            onMouseEnter={() => setServicesMenuOpen(true)}
+                            onMouseLeave={() => setServicesMenuOpen(false)}
                             variant={pathname.startsWith(link.href) ? 'default' : 'ghost'}
                             size="icon"
                             className="rounded-full transition-all hover:shadow-glow hover:bg-primary/20 w-12 h-12"
@@ -52,7 +55,12 @@ export function VerticalHeader() {
                         <p>{link.label}</p>
                       </TooltipContent>
                     </Tooltip>
-                    <DropdownMenuContent side="right" className="glassmorphism ml-2">
+                    <DropdownMenuContent 
+                      onMouseEnter={() => setServicesMenuOpen(true)}
+                      onMouseLeave={() => setServicesMenuOpen(false)}
+                      side="right" 
+                      className="glassmorphism ml-2"
+                    >
                       {link.subLinks.map((subLink) => (
                         <DropdownMenuItem key={subLink.label} asChild>
                           <Link href={subLink.href}>{subLink.label}</Link>
