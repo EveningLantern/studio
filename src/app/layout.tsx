@@ -42,12 +42,12 @@ export default function RootLayout({
       >
         <div className="relative flex min-h-dvh flex-col bg-background">
           <div className="flex flex-1">
+            <VerticalHeader />
             <main className="flex-1 p-4 md:p-6 lg:p-8">
               <div className="h-full rounded-2xl border bg-card text-card-foreground shadow-lg animate-page-in">
                 {children}
               </div>
             </main>
-            <VerticalHeader />
           </div>
           <Footer />
         </div>

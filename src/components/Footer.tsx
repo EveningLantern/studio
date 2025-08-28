@@ -13,6 +13,9 @@ export function Footer() {
     // Logic for newsletter subscription
     alert('Thank you for subscribing!');
   };
+  
+  const serviceLinks = NAV_LINKS.find((l) => l.label === 'Services')?.subLinks;
+  const companyLinks = NAV_LINKS.filter(l => ['About Us', 'Contact', 'Blog', 'Gallery', 'Career'].includes(l.label));
 
   return (
     <footer className="bg-card text-card-foreground">
@@ -48,7 +51,7 @@ export function Footer() {
           <div>
             <h3 className="font-headline font-semibold">Services</h3>
             <ul className="mt-4 space-y-2">
-              {NAV_LINKS.find((l) => l.label === 'Services')?.subLinks?.map((link) => (
+              {serviceLinks?.map((link) => (
                 <li key={link.label}>
                   <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground">
                     {link.label}
@@ -61,16 +64,13 @@ export function Footer() {
           <div>
             <h3 className="font-headline font-semibold">Company</h3>
             <ul className="mt-4 space-y-2">
-              <li>
-                <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">
-                  Contact
-                </Link>
-              </li>
+              {companyLinks.map((link) => (
+                 <li key={link.label}>
+                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

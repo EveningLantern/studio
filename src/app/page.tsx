@@ -43,9 +43,6 @@ export default function Home() {
             <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 transition-opacity">
               <Link href="/services/telecom-infrastructure">Explore Our Services</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-2 border-white text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary">
-              <Link href="/contact">Get a Free Consultation</Link>
-            </Button>
           </div>
         </div>
       </section>

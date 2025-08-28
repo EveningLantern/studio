@@ -10,13 +10,30 @@ import {
   Facebook,
   Twitter,
   Linkedin,
+  Home,
+  Briefcase,
+  Info,
+  Image as ImageIcon,
+  BookOpen,
+  User,
 } from 'lucide-react';
 
-export const NAV_LINKS = [
-  { href: '/', label: 'Home' },
+type NavLink = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  subLinks?: {
+    href: string;
+    label: string;
+  }[];
+}
+
+export const NAV_LINKS: NavLink[] = [
+  { href: '/', label: 'Home', icon: Home },
   {
     href: '/services',
     label: 'Services',
+    icon: Briefcase,
     subLinks: [
       { href: '/services/telecom-infrastructure', label: 'Telecom Infrastructure' },
       { href: '/services/geospatial-gis', label: 'Geospatial & GIS' },
@@ -24,8 +41,11 @@ export const NAV_LINKS = [
       { href: '/services/business-consultancy', label: 'Business Consultancy' },
     ],
   },
-  { href: '/about', label: 'About Us' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/about', label: 'About Us', icon: Info },
+  { href: '/blog', label: 'Blog', icon: BookOpen },
+  { href: '/gallery', label: 'Gallery', icon: ImageIcon },
+  { href: '/career', label: 'Career', icon: User },
+  { href: '/contact', label: 'Contact', icon: Mail },
 ];
 
 type Service = {
