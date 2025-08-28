@@ -30,17 +30,7 @@ type NavLink = {
 
 export const NAV_LINKS: NavLink[] = [
   { href: '/', label: 'Home', icon: Home },
-  {
-    href: '/services',
-    label: 'Services',
-    icon: Briefcase,
-    subLinks: [
-      { href: '/services/telecom-infrastructure', label: 'Telecom Infrastructure' },
-      { href: '/services/geospatial-gis', label: 'Geospatial & GIS' },
-      { href: '/services/skill-development', label: 'Skill Development' },
-      { href: '/services/business-consultancy', label: 'Business Consultancy' },
-    ],
-  },
+  { href: '/services', label: 'Services', icon: Briefcase },
   { href: '/about', label: 'About Us', icon: Info },
   { href: '/blog', label: 'Blog', icon: BookOpen },
   { href: '/gallery', label: 'Gallery', icon: ImageIcon },
