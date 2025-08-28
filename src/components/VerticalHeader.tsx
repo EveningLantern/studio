@@ -31,7 +31,7 @@ export function VerticalHeader() {
       {/* Desktop Sidebar */}
       <TooltipProvider>
         <header className="fixed top-1/2 left-4 -translate-y-1/2 z-50 hidden md:flex flex-col items-center">
-          <div className="rounded-full glassmorphism flex flex-col items-center p-2 gap-2">
+          <div className="rounded-full glassmorphism flex flex-col items-center p-2 gap-2 shadow-glow-green">
             <nav className="flex flex-col items-center gap-2">
               {NAV_LINKS.map((link) =>
                 link.subLinks ? (
@@ -86,7 +86,7 @@ export function VerticalHeader() {
       </TooltipProvider>
 
       {/* Mobile Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t md:hidden glassmorphism">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t md:hidden glassmorphism shadow-glow-green">
           <div className="container mx-auto flex items-center justify-around h-16">
               {NAV_LINKS.filter(l => ['Home', 'Services', 'Contact'].includes(l.label)).map((link) => (
                  <Link key={link.label} href={link.href} className={cn(
