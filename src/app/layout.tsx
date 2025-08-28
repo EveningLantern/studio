@@ -39,13 +39,23 @@ export default function RootLayout({
   const pathname = usePathname();
   const [animationClass, setAnimationClass] = useState('animate-page-in');
   const [pageKey, setPageKey] = useState(pathname);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
 
   useEffect(() => {
     if (pathname !== pageKey) {
       setAnimationClass('animate-page-out');
       const timer = setTimeout(() => {
         setPageKey(pathname);
-        setAnimationClass('animate-page-in');
+        setAnimationClass('animate-in');
       }, 750);
       return () => clearTimeout(timer);
     }
@@ -61,8 +71,11 @@ export default function RootLayout({
         )}
       >
         <div className="relative flex min-h-dvh flex-col bg-background">
-           <div className="fixed top-4 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 z-50">
-              <Logo />
+           <div className={cn(
+              "fixed top-0 left-0 z-50 transition-all duration-300",
+              scrolled ? "p-4" : "p-4 md:p-6 lg:p-8"
+            )}>
+              <Logo scrolled={scrolled} />
             </div>
           <div className="flex flex-1">
             <VerticalHeader />
@@ -74,7 +87,7 @@ export default function RootLayout({
                   animationClass
                 )}
               >
-                <div className="cut-corner h-full w-full">
+                <div className={cn("cut-corner h-full w-full transition-all duration-300", !scrolled && "pt-12 md:pt-10")}>
                   <ScrollArea className="h-full w-full rounded-2xl">
                     {children}
                   </ScrollArea>
