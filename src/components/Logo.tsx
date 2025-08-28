@@ -7,7 +7,7 @@ export function Logo() {
       <Network className="h-7 w-7 text-primary" />
       <span className="font-headline text-xl font-bold text-foreground">
         Digital
-        <span className="text-primary">Indian</span>
+        <span className="glowing-text">Indian</span>
       </span>
     </Link>
   );

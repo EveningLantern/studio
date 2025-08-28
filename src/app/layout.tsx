@@ -61,7 +61,7 @@ export default function RootLayout({
         )}
       >
         <div className="relative flex min-h-dvh flex-col bg-background">
-           <div className="fixed top-4 left-4 z-50">
+           <div className="fixed top-4 left-4 md:top-6 md:left-6 lg:top-8 lg:left-8 z-50">
               <Logo />
             </div>
           <div className="flex flex-1">
