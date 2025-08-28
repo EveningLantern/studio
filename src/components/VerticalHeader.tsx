@@ -30,7 +30,7 @@ export function VerticalHeader() {
     <>
       {/* Desktop Sidebar */}
       <TooltipProvider>
-        <header className="fixed top-1/2 left-4 -translate-y-1/2 z-50 hidden flex-col items-center md:flex">
+        <header className="fixed top-1/2 left-4 -translate-y-1/2 z-50 hidden md:flex flex-col items-center">
           <div className="rounded-full glassmorphism flex flex-col items-center p-2 gap-2">
             <nav className="flex flex-col items-center gap-2">
               {NAV_LINKS.map((link) =>
@@ -86,68 +86,54 @@ export function VerticalHeader() {
       </TooltipProvider>
 
       {/* Mobile Bottom Bar */}
-      <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t md:hidden glassmorphism">
-            <div className="container mx-auto flex items-center justify-between p-2">
-                <Logo />
-                <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                    <Menu className="h-6 w-6" />
-                    <span className="sr-only">Open menu</span>
-                    </Button>
-                </SheetTrigger>
-            </div>
-        </div>
-
-        <SheetContent side="left" className="h-full w-full p-0 border-r-0 glassmorphism">
-          <div className="flex h-full flex-col">
-            <div className="flex items-center justify-between p-4 border-b">
-              <Logo />
-              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
-                <X className="h-6 w-6" />
-                <span className="sr-only">Close menu</span>
-              </Button>
-            </div>
-            <nav className="flex flex-col gap-2 p-4">
-              {NAV_LINKS.map((link) => (
-                <div key={link.label}>
-                  {link.subLinks ? (
-                    <div className="flex flex-col gap-2">
-                       <Link
-                          href={link.href}
-                          className="px-4 py-2 font-medium text-foreground"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {link.label}
-                        </Link>
-                      <div className="flex flex-col gap-2 pl-4">
-                        {link.subLinks.map((subLink) => (
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t md:hidden glassmorphism">
+          <div className="container mx-auto flex items-center justify-around h-16">
+              {NAV_LINKS.filter(l => ['Home', 'Services', 'Contact'].includes(l.label)).map((link) => (
+                 <Link key={link.label} href={link.href} className={cn(
+                   "flex flex-col items-center gap-1 p-2 rounded-md transition-colors",
+                   pathname === link.href ? "text-primary" : "text-muted-foreground hover:text-primary"
+                 )}>
+                    <link.icon className="h-6 w-6" />
+                    <span className="text-xs">{link.label}</span>
+                 </Link>
+              ))}
+               <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                  <SheetTrigger asChild>
+                      <Button variant="ghost" size="icon" className="flex flex-col items-center gap-1 p-2 h-auto text-muted-foreground hover:text-primary">
+                        <Menu className="h-6 w-6" />
+                        <span className="text-xs">Menu</span>
+                      </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-auto w-full p-0 border-t-0 glassmorphism">
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-between p-4 border-b">
+                        <Logo />
+                        <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
+                          <X className="h-6 w-6" />
+                          <span className="sr-only">Close menu</span>
+                        </Button>
+                      </div>
+                      <nav className="grid grid-cols-3 gap-2 p-4">
+                        {NAV_LINKS.map((link) => (
                           <Link
-                            key={subLink.label}
-                            href={subLink.href}
-                            className="pl-8 text-muted-foreground"
+                            key={link.label}
+                            href={link.href}
+                            className={cn(
+                              "flex flex-col items-center gap-2 p-3 rounded-lg transition-colors text-center",
+                              pathname.startsWith(link.href) ? "bg-primary/20 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                            )}
                             onClick={() => setMobileMenuOpen(false)}
                           >
-                            {subLink.label}
+                            <link.icon className="h-7 w-7" />
+                            <span className="text-sm font-medium">{link.label}</span>
                           </Link>
                         ))}
-                      </div>
+                      </nav>
                     </div>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      className="px-4 py-2 font-medium text-muted-foreground"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </div>
-              ))}
-            </nav>
+                  </SheetContent>
+              </Sheet>
           </div>
-        </SheetContent>
-      </Sheet>
+      </div>
     </>
   );
 }

@@ -76,7 +76,7 @@ export default function BlogPage() {
                 </p>
               </CardContent>
               <CardFooter>
-                 <Button asChild variant="link" className="text-primary group-hover:text-accent p-0">
+                 <Button asChild variant="link" className="text-primary p-0">
                     <Link href={`/blog/${post.id}`}>
                       Read More <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>

@@ -66,7 +66,7 @@ export default function RootLayout({
             </div>
           <div className="flex flex-1">
             <VerticalHeader />
-            <main className="flex-1 overflow-hidden p-4 md:p-6 lg:p-8 ml-20">
+            <main className="flex-1 overflow-hidden p-4 md:p-6 lg:p-8 md:ml-20">
               <div
                 key={pageKey}
                 className={cn(
