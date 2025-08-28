@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { CONTACT_DETAILS } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -60,9 +61,12 @@ export default function ContactPage() {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-16 md:py-24">
       <div className="mb-12 text-center">
-        <h1 className="font-headline text-4xl font-extrabold tracking-tight md:text-5xl">
-          Get In Touch
-        </h1>
+        <div className="flex items-center justify-center gap-4">
+          <h1 className="font-headline text-4xl font-extrabold tracking-tight md:text-5xl">
+            Get In Touch
+          </h1>
+          <Badge variant="destructive">beta</Badge>
+        </div>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
           We're here to help. Whether you have a question about our services or want to discuss a new project, feel free to reach out.
         </p>
