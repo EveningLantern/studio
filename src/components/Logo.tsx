@@ -11,7 +11,7 @@ export function Logo({ scrolled }: { scrolled?: boolean }) {
         scrolled ? "w-0" : "w-48"
       )}>
         <span className="font-headline text-xl font-bold whitespace-nowrap">
-          <span className="glowing-text">Digital</span>
+          <span className="text-primary">Digital</span>
           <span className="text-green-500">Indian</span>
         </span>
       </div>
