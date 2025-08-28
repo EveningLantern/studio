@@ -78,21 +78,21 @@ export default function ContactPage() {
                     <h2 className="font-headline text-2xl font-bold mb-6">Contact Information</h2>
                     <div className="space-y-6 text-muted-foreground">
                         <div className="flex items-start gap-4">
-                            <MapPin className="h-6 w-6 text-primary mt-1" />
+                            <MapPin className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                             <div>
                                 <h3 className="font-semibold text-foreground">Address</h3>
                                 <p>{CONTACT_DETAILS.address}</p>
                             </div>
                         </div>
                          <div className="flex items-start gap-4">
-                            <Phone className="h-6 w-6 text-primary mt-1" />
+                            <Phone className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                             <div>
                                 <h3 className="font-semibold text-foreground">Phone</h3>
                                 <p>{CONTACT_DETAILS.phone}</p>
                             </div>
                         </div>
                          <div className="flex items-start gap-4">
-                            <Mail className="h-6 w-6 text-primary mt-1" />
+                            <Mail className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                             <div>
                                 <h3 className="font-semibold text-foreground">Email</h3>
                                 <p>{CONTACT_DETAILS.email}</p>
