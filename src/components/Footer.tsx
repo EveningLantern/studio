@@ -24,7 +24,7 @@ export function Footer() {
         {/* Contact Snippet */}
         <div className="rounded-lg bg-primary/90 p-8 text-primary-foreground md:p-12 glassmorphism border-none">
           <div className="flex flex-col items-center justify-between gap-8 text-center md:flex-row md:text-left">
-            <div>
+            <div className="text-black">
               <h2 className="font-headline text-3xl font-bold">Stay Ahead of the Curve</h2>
               <p className="mt-2 max-w-2xl">Subscribe to our newsletter for the latest in tech solutions and industry insights.</p>
             </div>
