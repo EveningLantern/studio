@@ -41,7 +41,7 @@ export default function Home() {
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 transition-opacity">
-              <Link href="/services/telecom-infrastructure">Explore Our Services</Link>
+              <Link href="/services">Explore Our Services</Link>
             </Button>
           </div>
         </div>
