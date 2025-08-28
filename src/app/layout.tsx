@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { Poppins, Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
+import { VerticalHeader } from '@/components/VerticalHeader';
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
@@ -41,8 +41,14 @@ export default function RootLayout({
         )}
       >
         <div className="relative flex min-h-dvh flex-col bg-background">
-          <Header />
-          <main className="flex-1">{children}</main>
+          <div className="flex flex-1">
+            <main className="flex-1 p-4 md:p-6 lg:p-8">
+              <div className="h-full rounded-2xl border bg-card text-card-foreground shadow-lg animate-page-in">
+                {children}
+              </div>
+            </main>
+            <VerticalHeader />
+          </div>
           <Footer />
         </div>
         <Toaster />
