@@ -10,8 +10,8 @@ export function Logo({ scrolled }: { scrolled?: boolean }) {
         "overflow-hidden transition-all duration-300 ease-in-out",
         scrolled ? "w-0" : "w-48"
       )}>
-        <span className="font-headline text-xl font-bold text-foreground whitespace-nowrap">
-          Digital
+        <span className="font-headline text-xl font-bold whitespace-nowrap">
+          <span className="text-green-500">Digital</span>
           <span className="glowing-text">Indian</span>
         </span>
       </div>
