@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/carousel';
 import { SERVICES, METRICS, PARTNERS, TESTIMONIALS } from '@/lib/constants';
 import { ArrowRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Footer } from '@/components/Footer';
 
 export default function Home() {
   return (
@@ -29,10 +29,10 @@ export default function Home() {
           alt="Collaboration in a modern office"
           data-ai-hint="technology collaboration"
           fill
-          className="object-cover"
+          className="object-cover rounded-t-2xl"
         />
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
+        <div className="absolute inset-0 bg-black/50 rounded-t-2xl" />
+        <div className="relative z-10 flex h-full flex-col items-center justify-center text-center p-4">
           <h1 className="font-headline text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
             Engineering the Digital Future
           </h1>
@@ -40,7 +40,7 @@ export default function Home() {
             Your trusted partner in building robust telecom infrastructure, leveraging geospatial insights, and empowering businesses.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-            <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 transition-opacity">
+            <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 transition-opacity">
               <Link href="/services/telecom-infrastructure">Explore Our Services</Link>
             </Button>
           </div>
@@ -60,9 +60,9 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             {SERVICES.map((service) => (
-              <Card key={service.slug} className="group flex transform flex-col text-center transition-all duration-300 hover:scale-105 hover:shadow-glow">
+              <Card key={service.slug} className="group flex transform flex-col text-center transition-all duration-300 hover:scale-105 hover:shadow-glow bg-transparent">
                 <CardHeader className="items-center">
-                  <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
+                  <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary transition-all duration-300 group-hover:shadow-glow">
                     <service.icon className="h-8 w-8" />
                   </div>
                   <CardTitle className="font-headline">{service.title}</CardTitle>
@@ -84,7 +84,7 @@ export default function Home() {
       </section>
 
       {/* Trust & Expertise Section */}
-      <section className="bg-card py-16 md:py-24">
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-3xl text-center">
             <h2 className="font-headline text-3xl font-bold tracking-tight text-foreground md:text-4xl">
@@ -96,7 +96,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 gap-8 text-center md:grid-cols-3">
             {METRICS.map((metric) => (
-              <div key={metric.label} className="rounded-lg bg-background p-8">
+              <div key={metric.label} className="rounded-lg p-8 glassmorphism transition-all duration-300 hover:shadow-glow">
                 <p className="font-headline text-5xl font-extrabold text-primary">{metric.value}</p>
                 <p className="mt-2 text-lg font-medium text-muted-foreground">{metric.label}</p>
               </div>
@@ -109,7 +109,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
               {PARTNERS.map((partner) => (
                 <div key={partner.name} className="flex items-center" title={partner.name}>
-                   <Image src={partner.logoUrl} alt={partner.name} width={150} height={50} className="object-contain filter grayscale transition-all duration-300 hover:grayscale-0" />
+                   <Image src={partner.logoUrl} alt={partner.name} width={150} height={50} className="object-contain filter grayscale transition-all duration-300 hover:grayscale-0 hover:scale-110" />
                 </div>
               ))}
             </div>
@@ -136,7 +136,7 @@ export default function Home() {
               {TESTIMONIALS.map((testimonial, index) => (
                 <CarouselItem key={index} className="md:basis-1/2">
                   <div className="p-1">
-                    <Card className="h-full">
+                    <Card className="h-full bg-transparent">
                       <CardContent className="flex h-full flex-col justify-center p-6 text-center">
                         <p className="mb-4 text-lg italic text-muted-foreground">
                           "{testimonial.quote}"
@@ -154,6 +154,7 @@ export default function Home() {
           </Carousel>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

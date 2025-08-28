@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { CONTACT_DETAILS, NAV_LINKS, SOCIAL_LINKS } from '@/lib/constants';
 import { Separator } from './ui/separator';
+import { MapPin, Phone, Mail } from 'lucide-react';
 
 export function Footer() {
   const handleSubscribe = (e: React.FormEvent) => {
@@ -18,10 +19,10 @@ export function Footer() {
   const companyLinks = NAV_LINKS.filter(l => ['About Us', 'Contact', 'Blog', 'Gallery', 'Career'].includes(l.label));
 
   return (
-    <footer className="bg-card text-card-foreground">
+    <footer className="text-card-foreground p-4 md:p-6 lg:p-8 pt-0">
       <div className="container mx-auto px-4 py-12">
         {/* Contact Snippet */}
-        <div className="rounded-lg bg-primary p-8 text-primary-foreground md:p-12">
+        <div className="rounded-lg bg-primary/90 p-8 text-primary-foreground md:p-12 glassmorphism border-none">
           <div className="flex flex-col items-center justify-between gap-8 text-center md:flex-row md:text-left">
             <div>
               <h2 className="font-headline text-3xl font-bold">Stay Ahead of the Curve</h2>
@@ -31,7 +32,7 @@ export function Footer() {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 bg-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/70"
+                className="bg-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/70"
                 required
               />
               <Button type="submit" variant="secondary" className="bg-white text-primary hover:bg-white/90">
@@ -53,7 +54,7 @@ export function Footer() {
             <ul className="mt-4 space-y-2">
               {serviceLinks?.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground">
+                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -66,7 +67,7 @@ export function Footer() {
             <ul className="mt-4 space-y-2">
               {companyLinks.map((link) => (
                  <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground">
+                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -74,19 +75,19 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h3 className="font-headline font-semibold">Contact Us</h3>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-start">
-                <span className="mt-1 h-4 w-4 flex-shrink-0 text-primary" />
+              <li className="flex items-start gap-2">
+                <MapPin className="mt-1 h-4 w-4 flex-shrink-0 text-primary" />
                 <span>{CONTACT_DETAILS.address}</span>
               </li>
-              <li className="flex items-center">
-                <span className="h-4 w-4 flex-shrink-0 text-primary" />
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4 flex-shrink-0 text-primary" />
                 <span>{CONTACT_DETAILS.phone}</span>
               </li>
-              <li className="flex items-center">
-                <span className="h-4 w-4 flex-shrink-0 text-primary" />
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 flex-shrink-0 text-primary" />
                 <span>{CONTACT_DETAILS.email}</span>
               </li>
             </ul>
@@ -97,9 +98,9 @@ export function Footer() {
 
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Digital Indian. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {SOCIAL_LINKS.map((social) => (
-              <Button key={social.name} variant="ghost" size="icon" asChild>
+              <Button key={social.name} variant="ghost" size="icon" asChild className="rounded-full hover:bg-primary/20">
                 <Link href={social.href} aria-label={social.name}>
                   <social.icon className="h-5 w-5" />
                 </Link>

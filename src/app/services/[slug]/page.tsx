@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { SERVICES } from '@/lib/constants';
 import { CheckCircle } from 'lucide-react';
+import { Footer } from '@/components/Footer';
 
 type ServicePageProps = {
   params: {
@@ -27,7 +28,7 @@ export default function ServicePage({ params }: ServicePageProps) {
   return (
     <article className="space-y-12">
       {/* Hero */}
-      <section className="relative h-[40vh] w-full overflow-hidden rounded-lg">
+      <section className="relative h-[40vh] w-full overflow-hidden rounded-t-2xl">
         <Image
           src={details.heroImage}
           alt={details.heroTitle}
@@ -47,7 +48,7 @@ export default function ServicePage({ params }: ServicePageProps) {
       </section>
       
       {/* Content Sections */}
-      <div className="space-y-8">
+      <div className="space-y-8 p-8">
         {details.sections.map((section, index) => (
           <div key={index}>
             <h2 className="font-headline text-2xl font-bold text-primary md:text-3xl">
@@ -69,6 +70,7 @@ export default function ServicePage({ params }: ServicePageProps) {
           </div>
         ))}
       </div>
+      <Footer />
     </article>
   );
 }

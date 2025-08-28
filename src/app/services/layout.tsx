@@ -14,10 +14,10 @@ export default function ServicesLayout({
   const pathname = usePathname();
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8 md:py-12">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+    <div className="p-4 md:p-6 lg:p-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 max-w-7xl mx-auto">
         <aside className="lg:col-span-1">
-          <Card className="sticky top-20 p-4">
+          <Card className="sticky top-8 p-4 bg-transparent">
             <h2 className="p-4 font-headline text-xl font-semibold">Our Services</h2>
             <nav className="flex flex-col gap-1">
               {SERVICES.map((service) => (
@@ -27,8 +27,8 @@ export default function ServicesLayout({
                   className={cn(
                     'flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium transition-colors',
                     pathname === `/services/${service.slug}`
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'bg-primary/90 text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                   )}
                 >
                   <service.icon className="h-5 w-5" />

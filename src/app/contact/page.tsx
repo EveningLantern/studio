@@ -20,6 +20,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CONTACT_DETAILS } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { Footer } from '@/components/Footer';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -59,23 +60,20 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-16 md:py-24">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-12 text-center">
-        <div className="flex items-center justify-center gap-4">
-          <h1 className="font-headline text-4xl font-extrabold tracking-tight md:text-5xl">
-            Get In Touch
-          </h1>
-          <Badge variant="destructive">beta</Badge>
-        </div>
+        <h1 className="font-headline text-4xl font-extrabold tracking-tight md:text-5xl">
+          Get In Touch
+        </h1>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
           We're here to help. Whether you have a question about our services or want to discuss a new project, feel free to reach out.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-5 max-w-7xl mx-auto">
         {/* Contact Info */}
         <div className="lg:col-span-2">
-            <Card className="h-full">
+            <Card className="h-full bg-transparent">
                 <CardContent className="p-8">
                     <h2 className="font-headline text-2xl font-bold mb-6">Contact Information</h2>
                     <div className="space-y-6 text-muted-foreground">
@@ -107,7 +105,7 @@ export default function ContactPage() {
 
         {/* Contact Form */}
         <div className="lg:col-span-3">
-          <Card>
+          <Card className="bg-transparent">
             <CardContent className="p-8">
               <h2 className="font-headline text-2xl font-bold mb-6">Send Us a Message</h2>
               <Form {...form}>
@@ -119,7 +117,7 @@ export default function ContactPage() {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="John Doe" {...field} />
+                          <Input placeholder="John Doe" {...field} className="bg-input/50" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -132,7 +130,7 @@ export default function ContactPage() {
                       <FormItem>
                         <FormLabel>Email Address</FormLabel>
                         <FormControl>
-                          <Input placeholder="you@example.com" {...field} />
+                          <Input placeholder="you@example.com" {...field} className="bg-input/50"/>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -145,7 +143,7 @@ export default function ContactPage() {
                       <FormItem>
                         <FormLabel>Subject</FormLabel>
                         <FormControl>
-                          <Input placeholder="Regarding Telecom Services" {...field} />
+                          <Input placeholder="Regarding Telecom Services" {...field} className="bg-input/50"/>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -160,7 +158,7 @@ export default function ContactPage() {
                         <FormControl>
                           <Textarea
                             placeholder="Tell us more about your project or inquiry..."
-                            className="min-h-[120px]"
+                            className="min-h-[120px] bg-input/50"
                             {...field}
                           />
                         </FormControl>
@@ -177,6 +175,7 @@ export default function ContactPage() {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

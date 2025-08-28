@@ -30,66 +30,68 @@ export function VerticalHeader() {
     <>
       {/* Desktop Sidebar */}
       <TooltipProvider>
-        <header className="sticky top-0 z-50 hidden h-screen flex-col items-center border-r border-border/40 bg-card p-4 shadow-glow md:flex">
-          <div className="mb-8">
-            <Logo />
-          </div>
-          <nav className="flex flex-col items-center gap-4">
-            {NAV_LINKS.map((link) =>
-              link.subLinks ? (
-                <DropdownMenu key={link.label} direction="right">
-                  <Tooltip>
+        <header className="sticky top-0 z-50 hidden h-screen flex-col items-center p-4 md:flex">
+          <div className="rounded-2xl glassmorphism w-full h-full flex flex-col items-center p-4">
+            <div className="mb-8">
+              <Logo />
+            </div>
+            <nav className="flex flex-col items-center gap-4">
+              {NAV_LINKS.map((link) =>
+                link.subLinks ? (
+                  <DropdownMenu key={link.label}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant={pathname.startsWith(link.href) ? 'default' : 'ghost'}
+                            size="icon"
+                            className="rounded-full transition-all hover:shadow-glow hover:bg-primary/20"
+                          >
+                            <link.icon />
+                          </Button>
+                        </DropdownMenuTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{link.label}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <DropdownMenuContent side="right" className="glassmorphism">
+                      {link.subLinks.map((subLink) => (
+                        <DropdownMenuItem key={subLink.label} asChild>
+                          <Link href={subLink.href}>{subLink.label}</Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Tooltip key={link.label}>
                     <TooltipTrigger asChild>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant={pathname.startsWith(link.href) ? 'default' : 'ghost'}
-                          size="icon"
-                          className="rounded-full transition-all hover:shadow-glow"
-                        >
+                      <Button
+                        asChild
+                        variant={pathname === link.href ? 'default' : 'ghost'}
+                        size="icon"
+                        className="rounded-full transition-all hover:shadow-glow hover:bg-primary/20"
+                      >
+                        <Link href={link.href}>
                           <link.icon />
-                        </Button>
-                      </DropdownMenuTrigger>
+                        </Link>
+                      </Button>
                     </TooltipTrigger>
                     <TooltipContent side="right">
                       <p>{link.label}</p>
                     </TooltipContent>
                   </Tooltip>
-                  <DropdownMenuContent side="right">
-                    {link.subLinks.map((subLink) => (
-                      <DropdownMenuItem key={subLink.label} asChild>
-                        <Link href={subLink.href}>{subLink.label}</Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Tooltip key={link.label}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      asChild
-                      variant={pathname === link.href ? 'default' : 'ghost'}
-                      size="icon"
-                      className="rounded-full transition-all hover:shadow-glow"
-                    >
-                      <Link href={link.href}>
-                        <link.icon />
-                      </Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    <p>{link.label}</p>
-                  </TooltipContent>
-                </Tooltip>
-              )
-            )}
-          </nav>
+                )
+              )}
+            </nav>
+          </div>
         </header>
       </TooltipProvider>
 
       {/* Mobile Bottom Bar */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-card p-2 md:hidden">
-            <div className="container mx-auto flex items-center justify-between">
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t md:hidden glassmorphism">
+            <div className="container mx-auto flex items-center justify-between p-2">
                 <Logo />
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -100,8 +102,8 @@ export function VerticalHeader() {
             </div>
         </div>
 
-        <SheetContent side="left" className="h-full w-full p-0">
-          <div className="flex h-full flex-col bg-card">
+        <SheetContent side="left" className="h-full w-full p-0 border-r-0 glassmorphism">
+          <div className="flex h-full flex-col">
             <div className="flex items-center justify-between p-4 border-b">
               <Logo />
               <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
