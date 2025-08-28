@@ -4,24 +4,24 @@
 
 @layer base {
   :root {
-    --background: 220 13% 7%;
-    --foreground: 0 0% 98%;
-    --card: 220 13% 10%;
-    --card-foreground: 0 0% 98%;
-    --popover: 220 13% 7%;
-    --popover-foreground: 0 0% 98%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
     --primary: 25 95% 53%; /* Orange */
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 13% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 220 13% 15%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 63.9%;
     --accent: 320 85% 55%; /* Pink */
-    --accent-foreground: 0 0% 98%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 85% 55%; /* Red */
     --destructive-foreground: 0 0% 98%;
-    --border: 220 13% 20%;
-    --input: 220 13% 20%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
     --ring: 25 95% 53%;
     --radius: 0.75rem;
     --chart-1: 220 70% 50%;
@@ -65,7 +65,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(170deg, hsl(220, 13%, 10%) 0%, hsl(220, 13%, 5%) 50%, hsl(220, 13%, 0%) 100%);
+    background: linear-gradient(170deg, hsl(0, 0%, 100%) 0%, hsl(0, 0%, 95%) 50%, hsl(0, 0%, 90%) 100%);
   }
 }
 
