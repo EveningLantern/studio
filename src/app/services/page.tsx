@@ -9,7 +9,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { SERVICES } from '@/lib/constants';
 import Image from 'next/image';
 import { CheckCircle } from 'lucide-react';
-import { Footer } from '@/components/Footer';
 
 export default function ServicesPage() {
   return (
@@ -82,7 +81,6 @@ export default function ServicesPage() {
           ))}
         </Accordion>
       </div>
-      <Footer />
     </div>
   );
 }
