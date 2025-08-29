@@ -99,6 +99,10 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Digital Indian. All rights reserved.</p>
           <div className="flex items-center gap-2">
+            <Link href="/admin/login" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Admin Login
+            </Link>
+            <Separator orientation="vertical" className="h-4" />
             {SOCIAL_LINKS.map((social) => (
               <Button key={social.name} variant="ghost" size="icon" asChild className="rounded-full hover:bg-primary/20">
                 <Link href={social.href} aria-label={social.name}>
