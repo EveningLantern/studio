@@ -8,8 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { NAV_LINKS } from '@/lib/constants';
-import { Logo } from '@/components/Logo';
+import { NAV_LINKS, ADMIN_NAV_LINK } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -20,12 +19,31 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
 import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Logo } from './Logo';
 
 export function VerticalHeader() {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isServicesMenuOpen, setServicesMenuOpen] = useState(false);
+
+  const navLinks = useMemo(() => {
+    const links = [...NAV_LINKS];
+    if (user) {
+      links.splice(1, 0, ADMIN_NAV_LINK);
+    }
+    return links;
+  }, [user]);
+
+  const mobileNavLinks = useMemo(() => {
+      const links = [...NAV_LINKS];
+      if (user) {
+          links.push(ADMIN_NAV_LINK);
+      }
+      return links;
+  }, [user]);
 
   return (
     <>
@@ -34,7 +52,7 @@ export function VerticalHeader() {
         <header className="fixed top-1/2 left-4 -translate-y-1/2 z-50 hidden md:flex flex-col items-center">
           <div className="rounded-full glassmorphism flex flex-col items-center p-2 gap-2 shadow-glow-green">
             <nav className="flex flex-col items-center gap-2">
-              {NAV_LINKS.map((link) =>
+              {navLinks.map((link) =>
                 link.subLinks ? (
                   <DropdownMenu key={link.label} open={isServicesMenuOpen} onOpenChange={setServicesMenuOpen}>
                     <Tooltip>
@@ -122,7 +140,7 @@ export function VerticalHeader() {
                         </Button>
                       </div>
                       <nav className="grid grid-cols-3 gap-2 p-4">
-                        {NAV_LINKS.map((link) => (
+                        {mobileNavLinks.map((link) => (
                           <Link
                             key={link.label}
                             href={link.href}

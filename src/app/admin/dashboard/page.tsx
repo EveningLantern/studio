@@ -1,0 +1,282 @@
+
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { LogOut, Image as ImageIcon, FileText, Trash2, Edit } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import Image from 'next/image';
+import { addGalleryItem } from './actions';
+
+interface GalleryItem {
+    id: string;
+    title: string;
+    hint: string;
+    image_url: string;
+}
+
+export default function AdminDashboardPage() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loadingGallery, setLoadingGallery] = useState(true);
+
+  const fetchGalleryItems = async () => {
+    setLoadingGallery(true);
+    const { data, error } = await supabase
+      .from('gallery')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching gallery items:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not fetch gallery items.',
+      });
+    } else {
+      setGalleryItems(data as GalleryItem[]);
+    }
+    setLoadingGallery(false);
+  };
+
+  useEffect(() => {
+    fetchGalleryItems();
+  }, []);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        setUser(session.user);
+      } else {
+        router.push('/admin/login');
+      }
+      setLoading(false);
+    });
+
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/admin/login');
+      } else {
+        setUser(session.user);
+      }
+      setLoading(false);
+    };
+
+    checkSession();
+
+    return () => subscription.unsubscribe();
+  }, [router]);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Logout Failed',
+        description: 'An error occurred while logging out.',
+      });
+    } else {
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+      router.push('/admin/login');
+    }
+  };
+
+  const handleGalleryFormSubmit = async (formData: FormData) => {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to upload.' });
+        return;
+    }
+    
+    const imageFile = formData.get('image') as File;
+    if (!imageFile || imageFile.size === 0) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Please select an image to upload.' });
+      return;
+    }
+
+    setIsUploading(true);
+
+    const result = await addGalleryItem(formData);
+
+    if (result.error) {
+      toast({ variant: 'destructive', title: 'Upload Failed', description: result.error });
+    } else {
+      toast({ title: 'Success!', description: 'Gallery item has been uploaded.' });
+      // Reset form manually if needed, or use a key on the form to reset it
+      const form = document.getElementById('gallery-form') as HTMLFormElement;
+      form?.reset();
+      await fetchGalleryItems(); // Re-fetch gallery items to show the new one
+    }
+
+    setIsUploading(false);
+  };
+
+
+  const handleBlogSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    console.log('Blog submission:', data);
+    toast({
+      title: 'Submission Received',
+      description: 'Blog post has been submitted for processing.',
+    });
+    e.currentTarget.reset();
+  };
+
+  if (loading) {
+    return (
+        <div className="p-4 md:p-6 lg:p-8">
+            <div className="max-w-4xl mx-auto">
+                <div className="flex justify-between items-center mb-8">
+                    <Skeleton className="h-10 w-64" />
+                    <Skeleton className="h-10 w-24" />
+                </div>
+                <Card className="bg-transparent">
+                    <CardHeader>
+                        <Skeleton className="h-8 w-48 mb-2" />
+                        <Skeleton className="h-4 w-full" />
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-40 w-full" />
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+  }
+
+  return (
+    <div className="p-4 md:p-6 lg:p-8">
+      <div className="max-w-4xl mx-auto">
+         <div className="flex justify-between items-center mb-8">
+            <h1 className="font-headline text-3xl font-bold">Admin Dashboard</h1>
+            <Button onClick={handleLogout} variant="destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+            </Button>
+         </div>
+        
+        <Card className="bg-transparent">
+          <CardHeader>
+            <CardTitle>Welcome, {user?.email || 'Admin'}!</CardTitle>
+            <CardDescription>
+              Use the tabs below to manage your website's content.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="gallery" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="gallery"><ImageIcon className="mr-2 h-4 w-4" /> Manage Gallery</TabsTrigger>
+                <TabsTrigger value="blog"><FileText className="mr-2 h-4 w-4" /> Manage Blog</TabsTrigger>
+              </TabsList>
+              <TabsContent value="gallery" className="mt-6">
+                <Card className="bg-transparent border-dashed">
+                  <CardHeader>
+                    <CardTitle>Upload New Gallery Image</CardTitle>
+                    <CardDescription>Add a new image to your gallery page.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form id="gallery-form" action={handleGalleryFormSubmit} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="gallery-image">Image File</Label>
+                        <Input id="gallery-image" name="image" type="file" required className="bg-input/50"/>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="gallery-title">Image Title</Label>
+                        <Input id="gallery-title" name="title" placeholder="e.g., Our Bangalore HQ" required className="bg-input/50"/>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="gallery-hint">Hover Description (Hint)</Label>
+                        <Input id="gallery-hint" name="hint" placeholder="e.g., office workspace" required className="bg-input/50"/>
+                      </div>
+                      <Button type="submit" disabled={isUploading}>
+                        {isUploading ? 'Uploading...' : 'Upload to Gallery'}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+                <Card className="bg-transparent border-dashed mt-8">
+                  <CardHeader>
+                    <CardTitle>Existing Gallery Items</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {loadingGallery ? (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 w-full" />)}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {galleryItems.map(item => (
+                          <div key={item.id} className="relative group">
+                            <Image src={item.image_url} alt={item.title} width={200} height={200} className="rounded-md object-cover w-full h-32" />
+                            <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button size="icon" variant="outline" className="h-8 w-8"><Edit className="h-4 w-4"/></Button>
+                              <Button size="icon" variant="destructive" className="h-8 w-8"><Trash2 className="h-4 w-4" /></Button>
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2 text-xs rounded-b-md">
+                               <p className="font-bold truncate">{item.title}</p>
+                               <p className="truncate">{item.hint}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="blog" className="mt-6">
+                <Card className="bg-transparent border-dashed">
+                  <CardHeader>
+                    <CardTitle>Create New Blog Post</CardTitle>
+                    <CardDescription>
+                      Write a new blog post or company update. It will appear on your blog page.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleBlogSubmit} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-title">Post Title</Label>
+                        <Input id="blog-title" name="title" placeholder="The Future of 5G in India" required className="bg-input/50"/>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-category">Category</Label>
+                        <Input id="blog-category" name="category" placeholder="e.g., Telecom, Company Update" required className="bg-input/50"/>
+                      </div>
+                       <div className="space-y-2">
+                        <Label htmlFor="blog-author">Author</Label>
+                        <Input id="blog-author" name="author" placeholder="John Doe" required className="bg-input/50"/>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-excerpt">Content / Excerpt</Label>
+                        <Textarea id="blog-excerpt" name="excerpt" placeholder="Write the main content of your post here..." required className="bg-input/50 min-h-[150px]"/>
+                      </div>
+                      <Button type="submit">Publish Post</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

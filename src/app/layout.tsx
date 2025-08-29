@@ -10,6 +10,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Logo } from '@/components/Logo';
+import { AuthProvider } from '@/contexts/AuthContext';
+import Chatbot from '@/components/Chatbot';
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
@@ -70,33 +72,36 @@ export default function RootLayout({
           fontInter.variable
         )}
       >
-        <div className="relative flex min-h-dvh flex-col bg-background">
-           <div className={cn(
-              "fixed top-0 left-0 z-50 transition-all duration-300",
-              scrolled ? "p-4" : "p-4 md:p-6 lg:p-8"
-            )}>
-              <Logo scrolled={scrolled} />
-            </div>
-          <div className="flex flex-1">
-            <VerticalHeader />
-            <main className="flex-1 overflow-hidden p-4 md:p-6 lg:p-8 md:ml-20">
-              <div
-                key={pageKey}
-                className={cn(
-                  'h-full w-full rounded-2xl glassmorphism shadow-2xl shadow-primary/10',
-                  animationClass
-                )}
-              >
-                <div className={cn("cut-corner h-full w-full transition-all duration-300", !scrolled && "pt-12 md:pt-10")}>
-                  <ScrollArea className="h-full w-full rounded-2xl">
-                    {children}
-                  </ScrollArea>
-                </div>
+        <AuthProvider>
+          <div className="relative flex min-h-dvh flex-col bg-background">
+            <div className={cn(
+                "fixed top-0 left-0 z-50 transition-all duration-300",
+                scrolled ? "p-4" : "p-4 md:p-6 lg:p-8"
+              )}>
+                <Logo scrolled={scrolled} />
               </div>
-            </main>
+            <div className="flex flex-1">
+              <VerticalHeader />
+              <main className="flex-1 overflow-hidden p-4 md:p-6 lg:p-8 md:ml-20">
+                <div
+                  key={pageKey}
+                  className={cn(
+                    'h-full w-full rounded-2xl glassmorphism shadow-2xl shadow-primary/10',
+                    animationClass
+                  )}
+                >
+                  <div className={cn("cut-corner h-full w-full transition-all duration-300", !scrolled && "pt-12 md:pt-10")}>
+                    <ScrollArea className="h-full w-full rounded-2xl">
+                      {children}
+                    </ScrollArea>
+                  </div>
+                </div>
+              </main>
+            </div>
           </div>
-        </div>
-        <Toaster />
+          <Toaster />
+          <Chatbot />
+        </AuthProvider>
       </body>
     </html>
   );
