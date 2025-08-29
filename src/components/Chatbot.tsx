@@ -7,6 +7,8 @@ import { Input } from './ui/input';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from './ui/scroll-area';
+import { chat } from '@/ai/flows/chatFlow';
+
 
 // Message interface
 interface Message {
@@ -58,81 +60,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isSubmitting }) =>
   );
 };
 
-// small mapping for common cities -> IANA timezones
-const cityTimeZones: Record<string, string> = {
-  kolkata: 'Asia/Kolkata',
-  india: 'Asia/Kolkata',
-  mumbai: 'Asia/Kolkata',
-  delhi: 'Asia/Kolkata',
-  bangalore: 'Asia/Kolkata',
-  london: 'Europe/London',
-  'new york': 'America/New_York',
-  nyc: 'America/New_York',
-  'los angeles': 'America/Los_Angeles',
-  la: 'America/Los_Angeles',
-  chicago: 'America/Chicago',
-  tokyo: 'Asia/Tokyo',
-  sydney: 'Australia/Sydney',
-};
-
-// try to extract a timezone (IANA) or a city from the user's text
-const extractTimezoneFromMessage = (text: string): string | undefined => {
-  // check "in {place}" patterns
-  const inMatch = text.match(/in\s+([A-Za-z\/_\s]+)/i);
-  if (inMatch) {
-    const place = inMatch[1].trim().toLowerCase();
-    for (const key of Object.keys(cityTimeZones)) {
-      if (place.includes(key)) return cityTimeZones[key];
-    }
-  }
-
-  // check for IANA timezone-like token (e.g., "Asia/Kolkata")
-  const ianaMatch = text.match(/\b([A-Za-z]+\/[A-Za-z_]+)\b/);
-  if (ianaMatch) {
-    return ianaMatch[1];
-  }
-
-  // common abbreviations
-  const abbrMatch = text.match(/\b(UTC|GMT|IST|PST|EST|CET|EET|BST)\b/i);
-  if (abbrMatch) {
-    const a = abbrMatch[1].toUpperCase();
-    if (a === 'IST') return 'Asia/Kolkata';
-    if (a === 'PST') return 'America/Los_Angeles';
-    if (a === 'EST') return 'America/New_York';
-    if (a === 'GMT' || a === 'UTC') return 'UTC';
-    if (a === 'CET') return 'Europe/Paris';
-    if (a === 'BST') return 'Europe/London';
-  }
-
-  return undefined;
-};
-
-// format time string (safe fallback included)
-const formatTime = (timeZone?: string): string => {
-  const now = new Date();
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true,
-  };
-
-  try {
-    if (timeZone) {
-      // may throw if the timezone string is invalid in some environments
-      return new Intl.DateTimeFormat('en-GB', { ...options, timeZone }).format(now);
-    }
-    return new Intl.DateTimeFormat('en-GB', options).format(now);
-  } catch (e) {
-    // fallback to browser's locale/time
-    return now.toLocaleString();
-  }
-};
-
 // Main Chatbot Component
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -144,7 +71,7 @@ const Chatbot: React.FC = () => {
         "What services do you offer?",
         "What are your business hours?",
         "How do I contact support?",
-        "How can I book a meeting?"
+        "What is the date today?"
       ]
     }
   ]);
@@ -161,52 +88,17 @@ const Chatbot: React.FC = () => {
     if (!messageToSend || status === 'submitting') return;
 
     const userMessage: Message = { text: messageToSend, sender: 'user' };
-
-    const timeQueryRegex = /\b(what(?:'s| is)? the time|what time is it|current time|time now|time in)\b/i;
-    if (timeQueryRegex.test(messageToSend)) {
-      const tz = extractTimezoneFromMessage(messageToSend);
-      const defaultTz = 'Asia/Kolkata';
-      const usedTz = tz ?? defaultTz;
-      const timeStr = formatTime(usedTz);
-      const botReply = tz
-        ? `The current time in ${usedTz} is ${timeStr}.`
-        : `The current time (Asia/Kolkata) is ${timeStr}.`;
-
-      const botResponse: Message = { text: botReply, sender: 'bot' };
-      setMessages(prev => [...prev, userMessage, botResponse]);
-      return;
-    }
-
     setMessages(prev => [...prev, userMessage]);
     setStatus('submitting');
 
     try {
-      // This is a placeholder. In a real app, you would have a Genkit flow here.
-      // const response = await callYourGenkitFlow({ message: messageToSend });
-      // const botResponse: Message = { text: response.reply, sender: 'bot' };
-      
-      // Simulating network delay and falling back to canned responses
-      await new Promise(res => setTimeout(res, 1000));
-      throw new Error("Simulating backend failure to show fallback logic.");
+      const response = await chat(messageToSend);
+      const botResponse: Message = { text: response, sender: 'bot' };
+      setMessages(prev => [...prev, botResponse]);
 
     } catch (error) {
       console.error("Chatbot API error:", error);
-
-      let botReply = "Sorry, I'm having trouble connecting right now. Please try again later.";
-      const lowerMessage = messageToSend.toLowerCase();
-      if (lowerMessage.includes('service') || lowerMessage.includes('what do you offer')) {
-        botReply = "We offer web development, mobile app development, AI solutions, and digital transformation services. Would you like to know more about any specific service?";
-      } else if (lowerMessage.includes('hours') || lowerMessage.includes('time')) {
-        botReply = "Our business hours are Monday to Sunday, 9:00 AM - 8:00 PM. We're available to help you during these times!";
-      } else if (lowerMessage.includes('contact') || lowerMessage.includes('support')) {
-        botReply = "You can reach us at contact@digitalindian.co.in or call us at +91 98765 43210. We're here to help!";
-      } else if (lowerMessage.includes('meeting') || lowerMessage.includes('book')) {
-        botReply = "To book a meeting, please contact us directly at contact@digitalindian.co.in. We'll be happy to schedule a consultation!";
-      } else if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-        botReply = "Hello! I'm here to help you with any questions about our services. What would you like to know?";
-      }
-
-      const botResponse: Message = { text: botReply, sender: 'bot' };
+      const botResponse: Message = { text: "Sorry, I'm having trouble connecting right now. Please try again later.", sender: 'bot' };
       setMessages(prev => [...prev, botResponse]);
     } finally {
       setStatus('idle');
