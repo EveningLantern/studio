@@ -88,16 +88,16 @@ export default function GalleryPage() {
 
       {selectedImage && (
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-            <DialogContent className="max-w-4xl p-0">
+            <DialogContent className="max-w-4xl glassmorphism p-4">
                  <div className="relative w-full aspect-video">
                      <Image 
                         src={selectedImage.image_url} 
                         alt={selectedImage.title} 
                         fill 
-                        className="object-contain"
+                        className="object-contain rounded-md"
                      />
                  </div>
-                 <div className="p-6 pt-2">
+                 <div className="pt-2">
                     <DialogHeader>
                         <DialogTitle className="font-headline text-2xl">{selectedImage.title}</DialogTitle>
                         <DialogDescription className="text-base text-muted-foreground">
