@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Logo } from '@/components/Logo';
 import { AuthProvider } from '@/contexts/AuthContext';
+import Chatbot from '@/components/Chatbot';
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
@@ -99,6 +100,7 @@ export default function RootLayout({
             </div>
           </div>
           <Toaster />
+          <Chatbot />
         </AuthProvider>
       </body>
     </html>
