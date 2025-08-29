@@ -19,22 +19,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSession = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
-        setLoading(false);
-    };
-
-    getSession();
-
+    // onAuthStateChange handles the initial check and any subsequent changes.
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setUser(session?.user ?? null);
         setLoading(false);
       }
     );
 
     return () => {
+      // Clean up the listener when the component unmounts.
       authListener.subscription.unsubscribe();
     };
   }, []);
