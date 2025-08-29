@@ -6,6 +6,13 @@ import Image from 'next/image';
 import { Footer } from '@/components/Footer';
 import { supabase } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface GalleryItem {
   id: string;
@@ -17,6 +24,7 @@ interface GalleryItem {
 export default function GalleryPage() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
 
   useEffect(() => {
     const fetchGalleryItems = async () => {
@@ -57,7 +65,11 @@ export default function GalleryPage() {
       ) : (
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 max-w-7xl mx-auto">
           {galleryItems.map((item) => (
-            <div key={item.id} className="overflow-hidden rounded-lg break-inside-avoid group relative">
+            <div 
+              key={item.id} 
+              className="overflow-hidden rounded-lg break-inside-avoid group relative cursor-pointer"
+              onClick={() => setSelectedImage(item)}
+            >
               <Image
                 src={item.image_url}
                 alt={item.title}
@@ -73,6 +85,30 @@ export default function GalleryPage() {
           ))}
         </div>
       )}
+
+      {selectedImage && (
+        <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+            <DialogContent className="max-w-4xl p-0">
+                 <div className="relative w-full aspect-video">
+                     <Image 
+                        src={selectedImage.image_url} 
+                        alt={selectedImage.title} 
+                        fill 
+                        className="object-contain"
+                     />
+                 </div>
+                 <div className="p-6 pt-2">
+                    <DialogHeader>
+                        <DialogTitle className="font-headline text-2xl">{selectedImage.title}</DialogTitle>
+                        <DialogDescription className="text-base text-muted-foreground">
+                            {selectedImage.hint}
+                        </DialogDescription>
+                    </DialogHeader>
+                 </div>
+            </DialogContent>
+        </Dialog>
+      )}
+      
       <Footer />
     </div>
   );
