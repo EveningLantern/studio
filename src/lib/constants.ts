@@ -16,6 +16,7 @@ import {
   Image as ImageIcon,
   BookOpen,
   User,
+  LayoutDashboard,
 } from 'lucide-react';
 
 type NavLink = {
@@ -47,6 +48,13 @@ export const NAV_LINKS: NavLink[] = [
   { href: '/career', label: 'Career', icon: User },
   { href: '/contact', label: 'Contact', icon: Mail },
 ];
+
+export const ADMIN_NAV_LINK: NavLink = {
+  href: '/admin/dashboard',
+  label: 'Dashboard',
+  icon: LayoutDashboard,
+};
+
 
 type Service = {
   slug: string;
