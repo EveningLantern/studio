@@ -18,8 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { auth } from '@/lib/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { supabase } from '@/lib/supabase';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -43,20 +42,24 @@ export default function AdminLoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      toast({
-        title: 'Login Successful',
-        description: 'Redirecting to the admin dashboard.',
-      });
-      router.push('/admin/dashboard');
-    } catch (error: any) {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
+    });
+
+    if (error) {
       console.error('Authentication error:', error);
       toast({
         variant: 'destructive',
         title: 'Login Failed',
         description: error.message || 'An unexpected error occurred.',
       });
+    } else {
+      toast({
+        title: 'Login Successful',
+        description: 'Redirecting to the admin dashboard.',
+      });
+      router.push('/admin/dashboard');
     }
   }
 

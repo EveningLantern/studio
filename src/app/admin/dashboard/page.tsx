@@ -3,8 +3,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { LogOut, Image as ImageIcon, FileText } from 'lucide-react';
@@ -22,32 +22,45 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        setUser(session.user);
       } else {
         router.push('/admin/login');
       }
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    // Check initial session
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/admin/login');
+      } else {
+        setUser(session.user);
+      }
+      setLoading(false);
+    };
+
+    checkSession();
+
+    return () => subscription.unsubscribe();
   }, [router]);
 
   const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      toast({
-        title: 'Logged Out',
-        description: 'You have been successfully logged out.',
-      });
-      router.push('/admin/login');
-    } catch (error) {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
       toast({
         variant: 'destructive',
         title: 'Logout Failed',
         description: 'An error occurred while logging out.',
       });
+    } else {
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+      router.push('/admin/login');
     }
   };
 
