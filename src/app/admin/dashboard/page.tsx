@@ -7,9 +7,13 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { LogOut } from 'lucide-react';
+import { LogOut, Image as ImageIcon, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -47,6 +51,31 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleGallerySubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    console.log('Gallery submission:', data);
+    toast({
+      title: 'Submission Received',
+      description: 'Gallery item has been submitted for processing.',
+    });
+    e.currentTarget.reset();
+  };
+
+  const handleBlogSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    console.log('Blog submission:', data);
+    toast({
+      title: 'Submission Received',
+      description: 'Blog post has been submitted for processing.',
+    });
+    e.currentTarget.reset();
+  };
+
+
   if (loading) {
     return (
         <div className="p-4 md:p-6 lg:p-8">
@@ -82,15 +111,74 @@ export default function AdminDashboardPage() {
         
         <Card className="bg-transparent">
           <CardHeader>
-            <CardTitle>Welcome, Admin!</CardTitle>
+            <CardTitle>Welcome, {user?.email || 'Admin'}!</CardTitle>
             <CardDescription>
-              You are logged in as {user?.email}. This is your central hub for managing the site.
+              Use the tabs below to manage your website's content.
             </CardDescription>
           </CardHeader>
           <CardContent>
-             <p className="text-muted-foreground">
-                More dashboard widgets and management tools will be available here soon.
-             </p>
+            <Tabs defaultValue="gallery" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="gallery"><ImageIcon className="mr-2 h-4 w-4" /> Manage Gallery</TabsTrigger>
+                <TabsTrigger value="blog"><FileText className="mr-2 h-4 w-4" /> Manage Blog</TabsTrigger>
+              </TabsList>
+              <TabsContent value="gallery" className="mt-6">
+                <Card className="bg-transparent border-dashed">
+                  <CardHeader>
+                    <CardTitle>Upload New Gallery Image</CardTitle>
+                    <CardDescription>Add a new image to your gallery page.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleGallerySubmit} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="gallery-image">Image File</Label>
+                        <Input id="gallery-image" name="image" type="file" required className="bg-input/50"/>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="gallery-title">Image Title</Label>
+                        <Input id="gallery-title" name="title" placeholder="e.g., Our Bangalore HQ" required className="bg-input/50"/>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="gallery-hint">Hover Description (Hint)</Label>
+                        <Input id="gallery-hint" name="hint" placeholder="e.g., office workspace" required className="bg-input/50"/>
+                      </div>
+                      <Button type="submit">Upload to Gallery</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="blog" className="mt-6">
+                <Card className="bg-transparent border-dashed">
+                  <CardHeader>
+                    <CardTitle>Create New Blog Post</CardTitle>
+                    <CardDescription>
+                      Write a new blog post or company update. It will appear on your blog page.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleBlogSubmit} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-title">Post Title</Label>
+                        <Input id="blog-title" name="title" placeholder="The Future of 5G in India" required className="bg-input/50"/>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-category">Category</Label>
+                        <Input id="blog-category" name="category" placeholder="e.g., Telecom, Company Update" required className="bg-input/50"/>
+                      </div>
+                       <div className="space-y-2">
+                        <Label htmlFor="blog-author">Author</Label>
+                        <Input id="blog-author" name="author" placeholder="John Doe" required className="bg-input/50"/>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="blog-excerpt">Content / Excerpt</Label>
+                        <Textarea id="blog-excerpt" name="excerpt" placeholder="Write the main content of your post here..." required className="bg-input/50 min-h-[150px]"/>
+                      </div>
+                      <Button type="submit">Publish Post</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
