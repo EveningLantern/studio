@@ -38,7 +38,7 @@ export async function sendContactEmail(formData: z.infer<typeof contactSchema>) 
 
   const mailOptions = {
     from: EMAIL_USER,
-    to: 'ankurr.era@gmail.com', // Your receiving email address
+    to: 'debarunbiswas070105@gmail.com', // Your receiving email address
     replyTo: email,
     subject: `New Contact Form Submission: ${subject}`,
     html: `
