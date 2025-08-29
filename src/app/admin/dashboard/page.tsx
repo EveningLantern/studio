@@ -14,8 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
+import { addGalleryItem } from './actions';
 
 interface GalleryItem {
     id: string;
@@ -99,56 +99,35 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleGallerySubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleGalleryFormSubmit = async (formData: FormData) => {
     if (!user) {
         toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to upload.' });
         return;
     }
-    setIsUploading(true);
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const file = formData.get('image') as File;
-    const title = formData.get('title') as string;
-    const hint = formData.get('hint') as string;
-
-    if (!file || file.size === 0) {
+    
+    const imageFile = formData.get('image') as File;
+    if (!imageFile || imageFile.size === 0) {
       toast({ variant: 'destructive', title: 'Error', description: 'Please select an image to upload.' });
-      setIsUploading(false);
-      return;
-    }
-    
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExtension}`;
-    
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('gallery')
-      .upload(fileName, file);
-
-    if (uploadError) {
-      console.error('Upload Error:', uploadError);
-      toast({ variant: 'destructive', title: 'Upload Failed', description: uploadError.message });
-      setIsUploading(false);
       return;
     }
 
-    const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(fileName);
-    const imageUrl = urlData.publicUrl;
+    setIsUploading(true);
 
-    const { error: dbError } = await supabase
-      .from('gallery')
-      .insert([{ title, hint, image_url: imageUrl, user_id: user.id }]);
+    const result = await addGalleryItem(formData);
 
-    if (dbError) {
-      console.error('Database Error:', dbError);
-      toast({ variant: 'destructive', title: 'Database Error', description: dbError.message });
+    if (result.error) {
+      toast({ variant: 'destructive', title: 'Upload Failed', description: result.error });
     } else {
       toast({ title: 'Success!', description: 'Gallery item has been uploaded.' });
-      form.reset();
-      fetchGalleryItems(); 
+      // Reset form manually if needed, or use a key on the form to reset it
+      const form = document.getElementById('gallery-form') as HTMLFormElement;
+      form?.reset();
+      await fetchGalleryItems(); // Re-fetch gallery items to show the new one
     }
+
     setIsUploading(false);
   };
+
 
   const handleBlogSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -215,7 +194,7 @@ export default function AdminDashboardPage() {
                     <CardDescription>Add a new image to your gallery page.</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <form onSubmit={handleGallerySubmit} className="space-y-6">
+                    <form id="gallery-form" action={handleGalleryFormSubmit} className="space-y-6">
                       <div className="space-y-2">
                         <Label htmlFor="gallery-image">Image File</Label>
                         <Input id="gallery-image" name="image" type="file" required className="bg-input/50"/>
