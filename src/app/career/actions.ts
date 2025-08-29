@@ -1,9 +1,6 @@
 'use server';
 
 import nodemailer from 'nodemailer';
-import { promises as fs } from 'fs';
-import { IncomingForm } from 'formidable';
-import { NextApiRequest } from 'next';
 
 export async function sendApplicationEmail(formData: FormData) {
   const name = formData.get('name') as string;
