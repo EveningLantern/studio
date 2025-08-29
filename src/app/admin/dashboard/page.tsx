@@ -7,19 +7,55 @@ import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { LogOut, Image as ImageIcon, FileText } from 'lucide-react';
+import { LogOut, Image as ImageIcon, FileText, Trash2, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { v4 as uuidv4 } from 'uuid';
+import Image from 'next/image';
+
+interface GalleryItem {
+    id: string;
+    title: string;
+    hint: string;
+    image_url: string;
+}
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loadingGallery, setLoadingGallery] = useState(true);
+
+  const fetchGalleryItems = async () => {
+    setLoadingGallery(true);
+    const { data, error } = await supabase
+      .from('gallery')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching gallery items:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not fetch gallery items.',
+      });
+    } else {
+      setGalleryItems(data as GalleryItem[]);
+    }
+    setLoadingGallery(false);
+  };
+
+  useEffect(() => {
+    fetchGalleryItems();
+  }, []);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -31,7 +67,6 @@ export default function AdminDashboardPage() {
       setLoading(false);
     });
 
-    // Check initial session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -64,16 +99,54 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleGallerySubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleGallerySubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-    console.log('Gallery submission:', data);
-    toast({
-      title: 'Submission Received',
-      description: 'Gallery item has been submitted for processing.',
-    });
-    e.currentTarget.reset();
+    setIsUploading(true);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const file = formData.get('image') as File;
+    const title = formData.get('title') as string;
+    const hint = formData.get('hint') as string;
+
+    if (!file || file.size === 0) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Please select an image to upload.' });
+      setIsUploading(false);
+      return;
+    }
+    
+    const fileExtension = file.name.split('.').pop();
+    const fileName = `${uuidv4()}.${fileExtension}`;
+    
+    // Upload image to Supabase Storage in 'gallery' bucket
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('gallery')
+      .upload(fileName, file);
+
+    if (uploadError) {
+      console.error('Upload Error:', uploadError);
+      toast({ variant: 'destructive', title: 'Upload Failed', description: uploadError.message });
+      setIsUploading(false);
+      return;
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(fileName);
+    const imageUrl = urlData.publicUrl;
+
+    // Insert into 'gallery' table in Supabase DB
+    const { error: dbError } = await supabase
+      .from('gallery')
+      .insert([{ title, hint, image_url: imageUrl }]);
+
+    if (dbError) {
+      console.error('Database Error:', dbError);
+      toast({ variant: 'destructive', title: 'Database Error', description: 'Could not save gallery item.' });
+    } else {
+      toast({ title: 'Success!', description: 'Gallery item has been uploaded.' });
+      form.reset();
+      fetchGalleryItems(); // Refresh the gallery list
+    }
+    setIsUploading(false);
   };
 
   const handleBlogSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -87,7 +160,6 @@ export default function AdminDashboardPage() {
     });
     e.currentTarget.reset();
   };
-
 
   if (loading) {
     return (
@@ -155,8 +227,38 @@ export default function AdminDashboardPage() {
                         <Label htmlFor="gallery-hint">Hover Description (Hint)</Label>
                         <Input id="gallery-hint" name="hint" placeholder="e.g., office workspace" required className="bg-input/50"/>
                       </div>
-                      <Button type="submit">Upload to Gallery</Button>
+                      <Button type="submit" disabled={isUploading}>
+                        {isUploading ? 'Uploading...' : 'Upload to Gallery'}
+                      </Button>
                     </form>
+                  </CardContent>
+                </Card>
+                <Card className="bg-transparent border-dashed mt-8">
+                  <CardHeader>
+                    <CardTitle>Existing Gallery Items</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {loadingGallery ? (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 w-full" />)}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {galleryItems.map(item => (
+                          <div key={item.id} className="relative group">
+                            <Image src={item.image_url} alt={item.title} width={200} height={200} className="rounded-md object-cover w-full h-32" />
+                            <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button size="icon" variant="outline" className="h-8 w-8"><Edit className="h-4 w-4"/></Button>
+                              <Button size="icon" variant="destructive" className="h-8 w-8"><Trash2 className="h-4 w-4" /></Button>
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2 text-xs rounded-b-md">
+                               <p className="font-bold truncate">{item.title}</p>
+                               <p className="truncate">{item.hint}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
