@@ -37,7 +37,7 @@ const chatFlow = ai.defineFlow(
         }
 
         // Fallback to Gemini
-        const prompt = `You are a friendly and helpful AI assistant for a company called 'Digital Indian'. Your goal is to provide concise and professional responses. The user asked: "${userMessage}".`;
+        const prompt = `You are a friendly and helpful AI assistant for a company called 'Digital Indian'. Your goal is to provide concise and professional responses. The user asked: "${userMessage}". Based on the user's question, provide a relevant and helpful answer about the company or its services. If the question is outside of your scope, politely say that you can only answer questions related to Digital Indian.`;
         
         const { output } = await ai.generate({
             prompt: prompt,
