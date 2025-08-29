@@ -77,10 +77,15 @@ const Chatbot: React.FC = () => {
   ]);
   const [status, setStatus] = useState<'idle' | 'submitting'>('idle');
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      if (scrollAreaRef.current) {
+          scrollAreaRef.current.scrollTo({
+              top: scrollAreaRef.current.scrollHeight,
+              behavior: 'smooth'
+          });
+      }
   }, [messages]);
 
   const handleSendMessage = useCallback(async (text: string) => {
@@ -135,7 +140,7 @@ const Chatbot: React.FC = () => {
         </Button>
       </header>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1" ref={scrollAreaRef}>
         <div className="p-4 space-y-4">
             {messages.map((msg, index) => (
               msg.type === 'faq_suggestions' ? (
@@ -182,7 +187,6 @@ const Chatbot: React.FC = () => {
                 </div>
               </div>
             )}
-            <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
 
