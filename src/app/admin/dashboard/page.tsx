@@ -101,6 +101,10 @@ export default function AdminDashboardPage() {
 
   const handleGallerySubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to upload.' });
+        return;
+    }
     setIsUploading(true);
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -117,7 +121,6 @@ export default function AdminDashboardPage() {
     const fileExtension = file.name.split('.').pop();
     const fileName = `${uuidv4()}.${fileExtension}`;
     
-    // Upload image to Supabase Storage in 'gallery' bucket
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('gallery')
       .upload(fileName, file);
@@ -129,22 +132,20 @@ export default function AdminDashboardPage() {
       return;
     }
 
-    // Get public URL
     const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(fileName);
     const imageUrl = urlData.publicUrl;
 
-    // Insert into 'gallery' table in Supabase DB
     const { error: dbError } = await supabase
       .from('gallery')
-      .insert([{ title, hint, image_url: imageUrl }]);
+      .insert([{ title, hint, image_url: imageUrl, user_id: user.id }]);
 
     if (dbError) {
       console.error('Database Error:', dbError);
-      toast({ variant: 'destructive', title: 'Database Error', description: 'Could not save gallery item.' });
+      toast({ variant: 'destructive', title: 'Database Error', description: dbError.message });
     } else {
       toast({ title: 'Success!', description: 'Gallery item has been uploaded.' });
       form.reset();
-      fetchGalleryItems(); // Refresh the gallery list
+      fetchGalleryItems(); 
     }
     setIsUploading(false);
   };
