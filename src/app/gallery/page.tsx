@@ -100,7 +100,7 @@ export default function GalleryPage() {
                  <div className="pt-2">
                     <DialogHeader>
                         <DialogTitle className="font-headline text-2xl">{selectedImage.title}</DialogTitle>
-                        <DialogDescription className="text-base text-muted-foreground">
+                        <DialogDescription className="text-base text-foreground/90">
                             {selectedImage.hint}
                         </DialogDescription>
                     </DialogHeader>
