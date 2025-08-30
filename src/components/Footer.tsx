@@ -7,7 +7,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { CONTACT_DETAILS, NAV_LINKS, SOCIAL_LINKS } from '@/lib/constants';
 import { Separator } from './ui/separator';
-import { MapPin, Phone, Mail } from 'lucide-react';
+import { MapPin, Phone, Mail, Send } from 'lucide-react';
 
 export function Footer() {
   const handleSubscribe = (e: React.FormEvent) => {
@@ -36,7 +36,8 @@ export function Footer() {
                 className="bg-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/70"
                 required
               />
-              <Button type="submit" variant="secondary" className="bg-white text-primary hover:bg-white/90">
+              <Button type="submit" className="bg-gradient-to-r from-accent to-destructive text-white shadow-lg transition-transform duration-300 hover:scale-105">
+                <Send className="mr-2 h-4 w-4" />
                 Subscribe
               </Button>
             </form>
