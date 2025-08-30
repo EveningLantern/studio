@@ -75,7 +75,7 @@ export function Footer() {
         <div className="mt-12 grid grid-cols-1 gap-8 text-center sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 sm:text-left">
           <div className="col-span-1 lg:col-span-1 sm:col-span-2 mx-auto sm:mx-0">
             <Logo />
-            <p className="mt-4 text-sm text-muted-foreground">Engineering the Digital Future.</p>
+            <p className="mt-4 text-sm text-muted-foreground">Leading provider of technology solutions specializing in telecom infrastructure, GIS solutions, and professional development services.</p>
           </div>
 
           <div className="col-span-1">
