@@ -36,9 +36,9 @@ export default function Home() {
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center p-4">
           <h1 className="font-headline text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
             Transforming Busness Through Technology Solution
-          </h1>
+        </h1>
           <p className="mt-4 max-w-2xl text-lg text-neutral-200 md:text-xl">
-            We deliver cutting- edge telecom insfrastruvture,GIS solutions,and profession 
+               
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 transition-opacity">

@@ -61,11 +61,13 @@ export async function addPost(prevState: any, formData: FormData) {
     console.error('Database Error:', dbError);
     return { message: 'Failed to save post to the database.' };
   }
+  
+  const result = { message: 'Success! Post created.' };
 
   revalidatePath('/admin/dashboard');
   revalidatePath('/blog');
 
-  return { message: 'Success! Post created.' };
+  return result;
 }
 
 // Action to delete a blog post

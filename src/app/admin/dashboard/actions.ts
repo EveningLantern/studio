@@ -51,10 +51,9 @@ export async function addGalleryItem(prevState: any, formData: FormData) {
 
   const result = { message: 'Success!' };
 
-  // Revalidate paths to refresh the cache after returning the result
   revalidatePath('/admin/dashboard');
   revalidatePath('/gallery');
-
+  
   return result;
 }
 
