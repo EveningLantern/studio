@@ -15,7 +15,7 @@ import Chatbot from '@/components/Chatbot';
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['400', '700', '800'],
   variable: '--font-headline',
 });
 
@@ -57,8 +57,8 @@ export default function RootLayout({
       setAnimationClass('animate-page-out');
       const timer = setTimeout(() => {
         setPageKey(pathname);
-        setAnimationClass('animate-in');
-      }, 750);
+        setAnimationClass('animate-page-in');
+      }, 500); // Reduced animation time
       return () => clearTimeout(timer);
     }
   }, [pathname, pageKey]);

@@ -74,10 +74,10 @@
     @apply bg-card/60 backdrop-blur-lg border border-white/10;
   }
   .animate-page-in {
-    animation: page-in 0.75s cubic-bezier(0.3, 0.8, 0.2, 1) forwards;
+    animation: page-in 0.5s cubic-bezier(0.3, 0.8, 0.2, 1) forwards;
   }
   .animate-page-out {
-    animation: page-out 0.75s cubic-bezier(0.3, 0.8, 0.2, 1) forwards;
+    animation: page-out 0.5s cubic-bezier(0.3, 0.8, 0.2, 1) forwards;
   }
 
   .cut-corner {
@@ -115,22 +115,22 @@
   @keyframes page-in {
     0% {
       opacity: 0;
-      transform: translateX(100%);
+      transform: translateY(20px);
     }
     100% {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateY(0);
     }
   }
 
   @keyframes page-out {
     0% {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateY(0);
     }
     100% {
       opacity: 0;
-      transform: translateX(-100%);
+      transform: translateY(-20px);
     }
   }
 
