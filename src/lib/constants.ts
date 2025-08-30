@@ -19,12 +19,6 @@ import {
   User,
   LayoutDashboard,
 } from 'lucide-react';
-import partner1 from '/public/assets/carousel/partner1.png';
-import partner2 from '/public/assets/carousel/partner2.png';
-import partner3 from '/public/assets/carousel/partner3.png';
-import partner4 from '/public/assets/carousel/partner4.png';
-import partner5 from '/public/assets/carousel/partner5.png';
-import partner6 from '/public/assets/carousel/partner6.png';
 
 type NavLink = {
   href: string;
@@ -202,12 +196,12 @@ export const METRICS = [
 ];
 
 export const PARTNERS = [
-  { name: 'Partner 1', logo: partner1 },
-  { name: 'Partner 2', logo: partner2 },
-  { name: 'Partner 3', logo: partner3 },
-  { name: 'Partner 4', logo: partner4 },
-  { name: 'Partner 5', logo: partner5 },
-  { name: 'Partner 6', logo: partner6 },
+  { name: 'Partner 1', logo: '/assets/carousel/partner1.png' },
+  { name: 'Partner 2', logo: '/assets/carousel/partner2.png' },
+  { name: 'Partner 3', logo: '/assets/carousel/partner3.png' },
+  { name: 'Partner 4', logo: '/assets/carousel/partner4.png' },
+  { name: 'Partner 5', logo: '/assets/carousel/partner5.png' },
+  { name: 'Partner 6', logo: '/assets/carousel/partner6.png' },
 ];
 
 export const TESTIMONIALS = [
