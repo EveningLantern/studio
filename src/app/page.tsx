@@ -38,7 +38,7 @@ export default function Home() {
             Transforming Busness Through Technology Solution
         </h1>
           <p className="mt-4 max-w-2xl text-lg text-neutral-200 md:text-xl">
-               
+          We deliver cutting-edge telecom infrastructure, GIS solutions, and professional development services that drive innovation and growth for businesses worldwide.    
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 transition-opacity">
@@ -56,7 +56,7 @@ export default function Home() {
               Our Core Services
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              We provide comprehensive solutions to drive growth and innovation in the digital age.
+            Comprehensive technology solutions tailored to meet your business needs and drive digital transformation.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
