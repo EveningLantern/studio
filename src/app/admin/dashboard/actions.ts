@@ -5,13 +5,16 @@ import { createSupabaseAdmin } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function addGalleryItem(formData: FormData) {
+export async function addGalleryItem(prevState: any, formData: FormData) {
   const title = formData.get('title') as string;
   const hint = formData.get('hint') as string;
   const imageFile = formData.get('image') as File;
 
   if (!imageFile || imageFile.size === 0) {
-    return { error: 'Please provide an image file.' };
+    return { message: 'Please provide an image file.' };
+  }
+   if (!title || !hint) {
+    return { message: 'Title and hint are required.' };
   }
 
   const supabaseAdmin = createSupabaseAdmin();
@@ -25,7 +28,7 @@ export async function addGalleryItem(formData: FormData) {
 
   if (uploadError) {
     console.error('Storage Error:', uploadError);
-    return { error: 'Failed to upload image to storage.' };
+    return { message: 'Failed to upload image to storage.' };
   }
   
   // Get the public URL of the uploaded file
@@ -33,7 +36,7 @@ export async function addGalleryItem(formData: FormData) {
   const imageUrl = urlData.publicUrl;
 
   if (!imageUrl) {
-    return { error: 'Failed to get public URL for the image.' };
+    return { message: 'Failed to get public URL for the image.' };
   }
 
   // Insert the record into the database
@@ -43,14 +46,14 @@ export async function addGalleryItem(formData: FormData) {
 
   if (dbError) {
     console.error('Database Error:', dbError);
-    return { error: 'Failed to save gallery item to the database.' };
+    return { message: 'Failed to save gallery item to the database.' };
   }
 
   // Revalidate paths to refresh the cache
   revalidatePath('/admin/dashboard');
   revalidatePath('/gallery');
 
-  return { error: null };
+  return { message: 'Success!' };
 }
 
 export async function deleteGalleryItem(id: string, imageUrl: string) {
@@ -112,3 +115,5 @@ export async function updateGalleryItem(id: string, title: string, hint: string)
 
     return { error: null };
 }
+
+    

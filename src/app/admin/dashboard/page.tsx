@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
@@ -13,7 +14,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { addGalleryItem, deleteGalleryItem, updateGalleryItem } from './actions';
 import {
@@ -35,7 +35,6 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 
-
 interface GalleryItem {
     id: string;
     title: string;
@@ -43,12 +42,25 @@ interface GalleryItem {
     image_url: string;
 }
 
+const initialState = {
+  message: '',
+};
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...</> : 'Upload to Gallery'}
+    </Button>
+  );
+}
+
+
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [loadingGallery, setLoadingGallery] = useState(true);
 
@@ -61,6 +73,10 @@ export default function AdminDashboardPage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editHint, setEditHint] = useState('');
+
+  const [formState, formAction] = useFormState(addGalleryItem, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+
 
   const fetchGalleryItems = async () => {
     setLoadingGallery(true);
@@ -81,6 +97,18 @@ export default function AdminDashboardPage() {
     }
     setLoadingGallery(false);
   };
+  
+  useEffect(() => {
+    if (formState.message) {
+      if (formState.message.includes('Success')) {
+        toast({ title: 'Success!', description: 'Gallery item has been uploaded.' });
+        formRef.current?.reset();
+        fetchGalleryItems();
+      } else {
+        toast({ variant: 'destructive', title: 'Upload Failed', description: formState.message });
+      }
+    }
+  }, [formState, toast]);
 
   useEffect(() => {
     fetchGalleryItems();
@@ -126,34 +154,6 @@ export default function AdminDashboardPage() {
       });
       router.push('/admin/login');
     }
-  };
-
-  const handleGalleryFormSubmit = async (formData: FormData) => {
-    if (!user) {
-        toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to upload.' });
-        return;
-    }
-    
-    const imageFile = formData.get('image') as File;
-    if (!imageFile || imageFile.size === 0) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Please select an image to upload.' });
-      return;
-    }
-
-    setIsUploading(true);
-
-    const result = await addGalleryItem(formData);
-
-    if (result.error) {
-      toast({ variant: 'destructive', title: 'Upload Failed', description: result.error });
-    } else {
-      toast({ title: 'Success!', description: 'Gallery item has been uploaded.' });
-      const form = document.getElementById('gallery-form') as HTMLFormElement;
-      form?.reset();
-      await fetchGalleryItems();
-    }
-
-    setIsUploading(false);
   };
 
   const handleDeleteClick = (item: GalleryItem) => {
@@ -254,7 +254,7 @@ export default function AdminDashboardPage() {
                       <CardDescription>Add a new image to your gallery page.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <form id="gallery-form" action={handleGalleryFormSubmit} className="space-y-6">
+                       <form ref={formRef} action={formAction} className="space-y-6">
                         <div className="space-y-2">
                           <Label htmlFor="gallery-image">Image File</Label>
                           <Input id="gallery-image" name="image" type="file" required className="bg-input/50"/>
@@ -267,9 +267,7 @@ export default function AdminDashboardPage() {
                           <Label htmlFor="gallery-hint">Hover Description (Hint)</Label>
                           <Input id="gallery-hint" name="hint" placeholder="e.g., office workspace" required className="bg-input/50"/>
                         </div>
-                        <Button type="submit" disabled={isUploading}>
-                          {isUploading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...</> : 'Upload to Gallery'}
-                        </Button>
+                        <SubmitButton />
                       </form>
                     </CardContent>
                   </Card>
@@ -382,3 +380,5 @@ export default function AdminDashboardPage() {
     </>
   );
 }
+
+    
