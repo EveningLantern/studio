@@ -4,6 +4,7 @@
 import { createSupabaseAdmin } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
+import nodemailer from 'nodemailer';
 
 // Helper function to handle Supabase file upload
 async function uploadFile(file: File, bucket: string) {
@@ -29,6 +30,66 @@ async function uploadFile(file: File, bucket: string) {
   return { data: { url: urlData.publicUrl, fileName }, error: null };
 }
 
+// Helper function to send notification emails
+async function sendNewPostNotification(post: { id: string; title: string; }) {
+  const { EMAIL_USER, EMAIL_PASS, NEXT_PUBLIC_BASE_URL } = process.env;
+
+  if (!EMAIL_USER || !EMAIL_PASS) {
+      console.error('Email credentials are not set. Cannot send post notifications.');
+      return;
+  }
+  if (!NEXT_PUBLIC_BASE_URL) {
+      console.error('NEXT_PUBLIC_BASE_URL is not set. Cannot create post links for emails.');
+      return;
+  }
+
+  const supabaseAdmin = createSupabaseAdmin();
+  const { data: subscribers, error } = await supabaseAdmin.from('subscriptions').select('email');
+
+  if (error || !subscribers || subscribers.length === 0) {
+      console.error('Could not fetch subscribers or no subscribers to notify.', error);
+      return;
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        user: EMAIL_USER,
+        pass: EMAIL_PASS,
+    },
+  });
+
+  const postUrl = `${NEXT_PUBLIC_BASE_URL}/blog/${post.id}`;
+
+  const mailOptions = {
+      from: `"Digital Indian" <${EMAIL_USER}>`,
+      subject: `New Blog Post: ${post.title}`,
+      html: `
+          <h1>New Post on Digital Indian Blog</h1>
+          <p>We've just published a new article titled "<strong>${post.title}</strong>".</p>
+          <p>We think you'll find it interesting!</p>
+          <a href="${postUrl}" style="display: inline-block; padding: 10px 20px; color: white; background-color: #f97316; text-decoration: none; border-radius: 5px;">Read Now</a>
+          <br>
+          <p>Or copy and paste this link into your browser: ${postUrl}</p>
+          <br>
+          <p>Best regards,<br>The Digital Indian Team</p>
+      `,
+  };
+
+  // BCC all subscribers
+  const emails = subscribers.map(s => s.email);
+  if (emails.length > 0) {
+    try {
+        await transporter.sendMail({ ...mailOptions, to: EMAIL_USER, bcc: emails });
+        console.log(`New post notification sent to ${emails.length} subscribers.`);
+    } catch (e) {
+        console.error('Failed to send new post notification emails:', e);
+    }
+  }
+}
+
 // Action to add a new blog post
 export async function addPost(prevState: any, formData: FormData) {
   const title = formData.get('title') as string;
@@ -47,7 +108,7 @@ export async function addPost(prevState: any, formData: FormData) {
   }
 
   const supabaseAdmin = createSupabaseAdmin();
-  const { error: dbError } = await supabaseAdmin
+  const { data: postData, error: dbError } = await supabaseAdmin
     .from('posts')
     .insert([{ 
         title, 
@@ -55,11 +116,18 @@ export async function addPost(prevState: any, formData: FormData) {
         author, 
         category, 
         image_url: uploadResult.url 
-    }]);
+    }])
+    .select()
+    .single();
 
   if (dbError) {
     console.error('Database Error:', dbError);
     return { message: 'Failed to save post to the database.' };
+  }
+  
+  // Send notifications but don't block response
+  if (postData) {
+    sendNewPostNotification(postData);
   }
   
   const result = { message: 'Success! Post created.' };
@@ -128,5 +196,3 @@ export async function updatePost(id: string, postData: { title: string; content:
 
     return { error: null };
 }
-
-    
