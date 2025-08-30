@@ -1,42 +1,57 @@
+
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Footer } from '@/components/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const blogPosts = [
-  {
-    id: 1,
-    title: 'The Future of 5G in India: A Game Changer for Connectivity',
-    date: 'October 26, 2023',
-    author: 'Aarav Patel',
-    excerpt: 'Explore how the rollout of 5G technology is set to revolutionize communication, IoT, and digital services across the Indian subcontinent.',
-    imageUrl: 'https://picsum.photos/800/600?random=10',
-    category: 'Telecom',
-  },
-  {
-    id: 2,
-    title: 'GIS in Urban Planning: Building Smarter Cities',
-    date: 'October 22, 2023',
-    author: 'Diya Mehta',
-    excerpt: 'Geospatial Information Systems are not just for maps. Discover how GIS data is becoming the cornerstone of sustainable and efficient urban development.',
-    imageUrl: 'https://picsum.photos/800/600?random=11',
-    category: 'Geospatial',
-  },
-  {
-    id: 3,
-    title: 'Bridging the Digital Divide: Our Mission for Skill Development',
-    date: 'October 18, 2023',
-    author: 'Isha Gupta',
-    excerpt: 'A look into our skill development initiatives that are empowering India\'s youth with the tools they need to thrive in the global tech economy.',
-    imageUrl: 'https://picsum.photos/800/600?random=12',
-    category: 'Skill Development',
-  },
-];
-
+interface Post {
+  id: string;
+  created_at: string;
+  title: string;
+  content: string;
+  author: string;
+  category: string;
+  image_url: string;
+}
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching posts:', error);
+      } else {
+        setPosts(data as Post[]);
+      }
+      setLoading(false);
+    };
+
+    fetchPosts();
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+  }
+
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <div className="text-center mb-16">
@@ -49,44 +64,63 @@ export default function BlogPage() {
       </div>
 
       <div className="grid gap-12 max-w-7xl mx-auto">
-        {blogPosts.map((post) => (
-          <Card key={post.id} className="grid md:grid-cols-2 overflow-hidden bg-transparent transition-all duration-300 hover:shadow-glow">
-             <div className="relative h-64 md:h-full">
-              <Image
-                src={post.imageUrl}
-                alt={post.title}
-                data-ai-hint="technology blog"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="flex flex-col justify-center p-8">
-              <CardHeader>
-                <CardDescription className="text-primary font-semibold">{post.category}</CardDescription>
-                <CardTitle className="font-headline text-2xl hover:text-primary transition-colors">
-                  <Link href={`/blog/${post.id}`}>{post.title}</Link>
-                </CardTitle>
-                <CardDescription>
-                  {post.date} by {post.author}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  {post.excerpt}
-                </p>
-              </CardContent>
-              <CardFooter>
-                 <Button asChild variant="link" className="text-primary p-0">
-                    <Link href={`/blog/${post.id}`}>
-                      Read More <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-              </CardFooter>
-            </div>
-          </Card>
-        ))}
+        {loading ? (
+          <>
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="grid md:grid-cols-2 overflow-hidden bg-transparent">
+                <Skeleton className="h-64 md:h-full w-full" />
+                <div className="flex flex-col justify-center p-8 space-y-4">
+                  <Skeleton className="h-4 w-1/4" />
+                  <Skeleton className="h-8 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-6 w-1/3" />
+                </div>
+              </Card>
+            ))}
+          </>
+        ) : (
+          posts.map((post) => (
+            <Card key={post.id} className="grid md:grid-cols-2 overflow-hidden bg-transparent transition-all duration-300 hover:shadow-glow">
+               <div className="relative h-64 md:h-full">
+                <Image
+                  src={post.image_url}
+                  alt={post.title}
+                  data-ai-hint="technology blog"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-col justify-center p-8">
+                <CardHeader>
+                  <CardDescription className="text-primary font-semibold">{post.category}</CardDescription>
+                  <CardTitle className="font-headline text-2xl hover:text-primary transition-colors">
+                    <Link href={`/blog/${post.id}`}>{post.title}</Link>
+                  </CardTitle>
+                  <CardDescription>
+                    {formatDate(post.created_at)} by {post.author}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground line-clamp-3">
+                    {post.content}
+                  </p>
+                </CardContent>
+                <CardFooter>
+                   <Button asChild variant="link" className="text-primary p-0">
+                      <Link href={`/blog/${post.id}`}>
+                        Read More <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                </CardFooter>
+              </div>
+            </Card>
+          ))
+        )}
       </div>
       <Footer />
     </div>
   );
 }
+
+    
