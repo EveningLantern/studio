@@ -33,7 +33,7 @@ export function Footer() {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="bg-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/70"
+                className="bg-background text-foreground placeholder:text-muted-foreground"
                 required
               />
               <Button type="submit" className="bg-gradient-to-r from-accent to-destructive text-white shadow-lg transition-transform duration-300 hover:scale-105">
