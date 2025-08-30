@@ -1,3 +1,4 @@
+
 import {
   TowerControl,
   Globe,
@@ -44,7 +45,7 @@ export const NAV_LINKS: NavLink[] = [
   },
   { href: '/about', label: 'About Us', icon: Info },
   { href: '/blog', label: 'Blog', icon: BookOpen },
-  { href: '/gallery', label: 'Gallery', icon: ImageIcon },
+  { href: '/gallery', label: 'Life at Digital Indian', icon: ImageIcon },
   { href: '/career', label: 'Career', icon: User },
   { href: '/contact', label: 'Contact', icon: Mail },
 ];

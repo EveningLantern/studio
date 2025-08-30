@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -16,7 +17,7 @@ export function Footer() {
   };
   
   const serviceLinks = NAV_LINKS.find((l) => l.label === 'Services')?.subLinks;
-  const companyLinks = NAV_LINKS.filter(l => ['About Us', 'Contact', 'Blog', 'Gallery', 'Career'].includes(l.label));
+  const companyLinks = NAV_LINKS.filter(l => ['About Us', 'Contact', 'Blog', 'Life at Digital Indian', 'Career'].includes(l.label));
 
   return (
     <footer className="text-card-foreground p-4 md:p-6 lg:p-8 pt-0">

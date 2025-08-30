@@ -49,10 +49,10 @@ export default function GalleryPage() {
     <div className="p-4 md:p-6 lg:p-8">
       <div className="text-center mb-16">
         <h1 className="font-headline text-4xl font-extrabold tracking-tight md:text-5xl">
-          Our Gallery
+          Life at Digital Indian
         </h1>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-          A visual journey through our projects, team culture, and the impact we're making.
+          A glimpse into our vibrant culture, collaborative team, and the moments that make us who we are.
         </p>
       </div>
 
