@@ -133,4 +133,34 @@
       transform: translateX(-100%);
     }
   }
+
+  /* Stacking Cards Styles */
+  .stackingcards-container {
+    padding: 10rem 5rem 50rem 5rem;
+    width: 100%;
+  }
+
+  .stackingcards {
+    color: white;
+    position: relative;
+  }
+
+  .stackingcard {
+    border: 1px solid #000000;
+    background-color: #cacaca;
+    color: #020202;
+    height: 20rem;
+    width: 100%;
+    border-radius: 3rem;
+    margin: 30px 0;
+    transform-origin: top center;
+    padding: 5rem;
+    box-sizing: border-box;
+  }
+
+  .end-element {
+    width: 100%;
+    height: 1px;
+    border-top: 1px solid red;
+  }
 }
