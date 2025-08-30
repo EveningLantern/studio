@@ -16,7 +16,7 @@ export function Logo({ scrolled }: { scrolled?: boolean }) {
       />
       <div
         className={cn(
-          'overflow-hidden transition-all duration- ease-in-out',
+          'overflow-hidden transition-all duration-500 ease-in-out',
           scrolled ? 'max-w-0 opacity-0 -translate-x-4' : 'max-w-xs opacity-100 translate-x-0'
         )}
       >
