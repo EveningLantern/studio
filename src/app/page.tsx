@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -16,9 +17,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { METRICS, PARTNERS, TESTIMONIALS, SERVICES } from '@/lib/constants';
+import { METRICS, TESTIMONIALS, SERVICES } from '@/lib/constants';
 import { ArrowRight } from 'lucide-react';
 import { Footer } from '@/components/Footer';
+import { PartnerCarousel } from '@/components/PartnerCarousel';
 
 export default function Home() {
   return (
@@ -89,33 +91,29 @@ export default function Home() {
       {/* Trust & Expertise Section */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="mx-auto mb-12 max-w-3xl text-center">
-            <h2 className="font-headline text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-              Trust & Expertise
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Decades of experience, hundreds of successful projects, and a network of trusted partners.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-8 text-center md:grid-cols-3">
-            {METRICS.map((metric) => (
-              <div key={metric.label} className="rounded-lg p-8 glassmorphism transition-all duration-300 hover:shadow-glow">
-                <p className="font-headline text-5xl font-extrabold text-primary">{metric.value}</p>
-                <p className="mt-2 text-lg font-medium text-muted-foreground">{metric.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-16">
-            <h3 className="mb-8 text-center font-headline text-2xl font-semibold text-muted-foreground">
-              Our Partners
-            </h3>
-            <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
-              {PARTNERS.map((partner) => (
-                <div key={partner.name} className="flex items-center" title={partner.name}>
-                   <Image src={partner.logoUrl} alt={partner.name} width={150} height={50} className="object-contain filter grayscale transition-all duration-300 hover:grayscale-0 hover:scale-110" />
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 items-center">
+             <div className="max-w-3xl">
+                <h2 className="font-headline text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                  Trust & Expertise
+                </h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                  Decades of experience, hundreds of successful projects, and a network of trusted partners.
+                </p>
+                <div className="mt-8 grid grid-cols-1 gap-8 text-center sm:grid-cols-3">
+                  {METRICS.map((metric) => (
+                    <div key={metric.label} className="rounded-lg p-8 glassmorphism transition-all duration-300 hover:shadow-glow">
+                      <p className="font-headline text-5xl font-extrabold text-primary">{metric.value}</p>
+                      <p className="mt-2 text-lg font-medium text-muted-foreground">{metric.label}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+             </div>
+             <div className="rounded-lg p-8 glassmorphism transition-all duration-300 hover:shadow-glow">
+                <h3 className="mb-8 text-center font-headline text-2xl font-semibold text-muted-foreground">
+                    Our Partners
+                </h3>
+                <PartnerCarousel />
+             </div>
           </div>
         </div>
       </section>

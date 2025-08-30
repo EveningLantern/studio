@@ -19,6 +19,12 @@ import {
   User,
   LayoutDashboard,
 } from 'lucide-react';
+import partner1 from '/public/assets/carousel/partner1.png';
+import partner2 from '/public/assets/carousel/partner2.png';
+import partner3 from '/public/assets/carousel/partner3.png';
+import partner4 from '/public/assets/carousel/partner4.png';
+import partner5 from '/public/assets/carousel/partner5.png';
+import partner6 from '/public/assets/carousel/partner6.png';
 
 type NavLink = {
   href: string;
@@ -196,10 +202,12 @@ export const METRICS = [
 ];
 
 export const PARTNERS = [
-  { name: 'Skill India', logoUrl: 'https://picsum.photos/150/50?random=11' },
-  { name: 'NASSCOM', logoUrl: 'https://picsum.photos/150/50?random=12' },
-  { name: 'Startup India', logoUrl: 'https://picsum.photos/150/50?random=13' },
-  { name: 'Digital India', logoUrl: 'https://picsum.photos/150/50?random=14' },
+  { name: 'Partner 1', logo: partner1 },
+  { name: 'Partner 2', logo: partner2 },
+  { name: 'Partner 3', logo: partner3 },
+  { name: 'Partner 4', logo: partner4 },
+  { name: 'Partner 5', logo: partner5 },
+  { name: 'Partner 6', logo: partner6 },
 ];
 
 export const TESTIMONIALS = [
