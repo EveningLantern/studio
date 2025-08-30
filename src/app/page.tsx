@@ -16,10 +16,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { METRICS, PARTNERS, TESTIMONIALS } from '@/lib/constants';
+import { METRICS, PARTNERS, TESTIMONIALS, SERVICES } from '@/lib/constants';
 import { ArrowRight } from 'lucide-react';
 import { Footer } from '@/components/Footer';
-import StackingCards from '@/components/StackingCards';
 
 export default function Home() {
   return (
@@ -60,7 +59,30 @@ export default function Home() {
               We provide comprehensive solutions to drive growth and innovation in the digital age.
             </p>
           </div>
-          <StackingCards />
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {SERVICES.map((service) => (
+              <Card key={service.slug} className="flex flex-col bg-transparent transition-all duration-300 hover:shadow-glow">
+                <CardHeader className="flex-shrink-0">
+                  <div className="flex items-center gap-4">
+                    <div className="rounded-full bg-primary/20 p-3 text-primary">
+                      <service.icon className="h-6 w-6" />
+                    </div>
+                    <CardTitle className="font-headline text-xl leading-tight">{service.title}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <CardDescription>{service.description}</CardDescription>
+                </CardContent>
+                <div className="p-6 pt-0">
+                   <Button asChild variant="link" className="text-primary p-0">
+                    <Link href={`/services/${service.slug}`}>
+                      Learn More <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
