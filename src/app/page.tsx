@@ -35,10 +35,10 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center p-4">
           <h1 className="font-headline text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-            Transforming Busness Thro
+            Transforming Busness Through Technology Solution
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-neutral-200 md:text-xl">
-            Your trusted partner in building robust telecom infrastructure, leveraging geospatial insights, and empowering businesses.
+            We deliver cutting- edge telecom insfrastruvture,GIS solutions,and profession 
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
             <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 transition-opacity">

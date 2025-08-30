@@ -49,11 +49,13 @@ export async function addGalleryItem(prevState: any, formData: FormData) {
     return { message: 'Failed to save gallery item to the database.' };
   }
 
-  // Revalidate paths to refresh the cache
+  const result = { message: 'Success!' };
+
+  // Revalidate paths to refresh the cache after returning the result
   revalidatePath('/admin/dashboard');
   revalidatePath('/gallery');
 
-  return { message: 'Success!' };
+  return result;
 }
 
 export async function deleteGalleryItem(id: string, imageUrl: string) {
