@@ -52,3 +52,63 @@ export async function addGalleryItem(formData: FormData) {
 
   return { error: null };
 }
+
+export async function deleteGalleryItem(id: string, imageUrl: string) {
+    const supabaseAdmin = createSupabaseAdmin();
+    
+    // Extract file name from URL
+    const fileName = imageUrl.split('/').pop();
+
+    if (!fileName) {
+        return { error: 'Could not determine file name from URL.' };
+    }
+
+    // 1. Delete from storage
+    const { error: storageError } = await supabaseAdmin.storage
+      .from('gallery')
+      .remove([fileName]);
+
+    if (storageError) {
+      console.error('Storage Deletion Error:', storageError);
+      // We can choose to continue even if storage deletion fails, to remove the db record.
+    }
+
+    // 2. Delete from database
+    const { error: dbError } = await supabaseAdmin
+        .from('gallery')
+        .delete()
+        .match({ id });
+
+    if (dbError) {
+        console.error('Database Deletion Error:', dbError);
+        return { error: 'Failed to delete gallery item from the database.' };
+    }
+
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/gallery');
+    
+    return { error: null };
+}
+
+export async function updateGalleryItem(id: string, title: string, hint: string) {
+    if (!title || !hint) {
+        return { error: 'Title and hint cannot be empty.' };
+    }
+    
+    const supabaseAdmin = createSupabaseAdmin();
+
+    const { error } = await supabaseAdmin
+        .from('gallery')
+        .update({ title, hint })
+        .match({ id });
+
+    if (error) {
+        console.error('Database Update Error:', error);
+        return { error: 'Failed to update gallery item.' };
+    }
+    
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/gallery');
+
+    return { error: null };
+}
