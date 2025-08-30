@@ -7,17 +7,46 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { CONTACT_DETAILS, NAV_LINKS, SOCIAL_LINKS } from '@/lib/constants';
 import { Separator } from './ui/separator';
-import { MapPin, Phone, Mail, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Send, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { subscribeToNewsletter } from '@/app/actions/subscribeAction';
+import { useRef, useActionState } from 'react';
+import { useEffect } from 'react';
+
 
 export function Footer() {
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Logic for newsletter subscription
-    alert('Thank you for subscribing!');
-  };
+  const { toast } = useToast();
+  const formRef = useRef<HTMLFormElement>(null);
   
-  const serviceLinks = NAV_LINKS.find((l) => l.label === 'Services')?.subLinks;
-  const companyLinks = NAV_LINKS.filter(l => ['About Us', 'Contact', 'Blog', 'Life at Digital Indian', 'Career'].includes(l.label));
+  const [state, formAction] = useActionState(subscribeToNewsletter, {
+    message: '',
+    status: 'idle'
+  });
+
+  useEffect(() => {
+    if (state.status === 'success') {
+      toast({
+        title: 'Subscribed!',
+        description: state.message,
+      });
+      formRef.current?.reset();
+    } else if (state.status === 'error') {
+      toast({
+        variant: 'destructive',
+        title: 'Subscription Failed',
+        description: state.message,
+      });
+    }
+  }, [state, toast]);
+
+  const SubmitButton = () => {
+    return (
+      <Button type="submit" className="bg-gradient-to-r from-accent to-destructive text-white shadow-lg transition-transform duration-300 hover:scale-105">
+        <Send className="mr-2 h-4 w-4" />
+        Subscribe
+      </Button>
+    )
+  }
 
   return (
     <footer className="text-card-foreground p-4 md:p-6 lg:p-8 pt-0">
@@ -29,17 +58,15 @@ export function Footer() {
               <h2 className="font-headline text-3xl font-bold">Stay Ahead of the Curve</h2>
               <p className="mt-2 max-w-2xl">Subscribe to our newsletter for the latest in tech solutions and industry insights.</p>
             </div>
-            <form onSubmit={handleSubscribe} className="flex w-full max-w-sm items-center space-x-2">
+            <form ref={formRef} action={formAction} className="flex w-full max-w-sm items-center space-x-2">
               <Input
                 type="email"
+                name="email"
                 placeholder="Enter your email"
                 className="bg-background text-foreground placeholder:text-muted-foreground"
                 required
               />
-              <Button type="submit" className="bg-gradient-to-r from-accent to-destructive text-white shadow-lg transition-transform duration-300 hover:scale-105">
-                <Send className="mr-2 h-4 w-4" />
-                Subscribe
-              </Button>
+              <SubmitButton />
             </form>
           </div>
         </div>
@@ -54,7 +81,7 @@ export function Footer() {
           <div className="col-span-1">
             <h3 className="font-headline font-semibold">Services</h3>
             <ul className="mt-4 space-y-2">
-              {serviceLinks?.map((link) => (
+              {NAV_LINKS.find((l) => l.label === 'Services')?.subLinks?.map((link) => (
                 <li key={link.label}>
                   <Link href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     {link.label}
@@ -67,7 +94,7 @@ export function Footer() {
           <div className="col-span-1">
             <h3 className="font-headline font-semibold">Company</h3>
             <ul className="mt-4 space-y-2">
-              {companyLinks.map((link) => (
+              {NAV_LINKS.filter(l => ['About Us', 'Contact', 'Blog', 'Life at Digital Indian', 'Career'].includes(l.label)).map((link) => (
                  <li key={link.label}>
                   <Link href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     {link.label}
