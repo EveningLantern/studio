@@ -249,9 +249,9 @@ export const TEAM_MEMBERS = [
 
 
 export const CONTACT_DETAILS = {
-  address: "123 Tech Park, Innovation Drive, Bangalore, 560100, India",
-  phone: "+91 98765 43210",
-  email: "contact@digitalindian.co.in",
+  address: "EN-9, Salt Lake, Sec-5, Kolkata-700091",
+  phone: "+91 7908735132",
+  email: "info@digitalindian.co.in",
 };
 
 export const SOCIAL_LINKS = [
