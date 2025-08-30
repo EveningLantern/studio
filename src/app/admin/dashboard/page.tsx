@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useEffect, useState, useRef, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
   const [editTitle, setEditTitle] = useState('');
   const [editHint, setEditHint] = useState('');
 
-  const [formState, formAction] = useFormState(addGalleryItem, initialState);
+  const [formState, formAction] = useActionState(addGalleryItem, initialState);
   const formRef = useRef<HTMLFormElement>(null);
 
 
@@ -380,5 +380,6 @@ export default function AdminDashboardPage() {
     </>
   );
 }
+    
 
     
