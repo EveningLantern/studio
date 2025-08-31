@@ -15,7 +15,7 @@ export function PartnerCarousel() {
     <Carousel
       plugins={[
         Autoplay({
-          delay: 2000,
+          delay: 1000,
           stopOnInteraction: false,
           stopOnMouseEnter: true,
         }),
