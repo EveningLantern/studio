@@ -374,3 +374,149 @@ export async function notifySubscribersOfUpdate(updateId: string, updateTitle: s
   console.log(`🎉 Finished sending update notifications. Sent: ${sentCount}, Failed: ${failedCount}`);
   return { success: true, message: `Notifications sent to ${sentCount} subscribers. ${failedCount > 0 ? `${failedCount} failed.` : ''}` };
 }
+
+
+// --- Job Opening Actions ---
+
+// ✅ Add new job opening
+export async function addJobOpening(prevState: any, formData: FormData) {
+  const title = formData.get('title') as string;
+  const location = formData.get('location') as string;
+  const type = formData.get('type') as string;
+  const department = formData.get('department') as string;
+  const description = formData.get('description') as string;
+
+  if (!title || !location || !type || !department || !description) {
+    return { message: 'All fields are required.' };
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase
+    .from('job_openings')
+    .insert([{ title, location, type, department, description }]);
+
+  if (error) {
+    console.error('❌ Database insert error (jobs):', error);
+    return { message: 'Failed to save job opening to DB.' };
+  }
+
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/career');
+
+  return { message: '✅ Success! Job opening has been posted.' };
+}
+
+// ✅ Delete job opening
+export async function deleteJobOpening(id: string) {
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase.from('job_openings').delete().match({ id });
+
+  if (error) {
+    console.error('❌ DB deletion error (jobs):', error);
+    return { error: 'Failed to delete job opening from DB.' };
+  }
+
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/career');
+
+  return { error: null };
+}
+
+// ✅ Update job opening
+export async function updateJobOpening(id: string, jobData: { title: string; location: string; type: string; department: string; description: string; }) {
+  const { title, location, type, department, description } = jobData;
+  if (!title || !location || !type || !department || !description) {
+    return { error: 'All fields are required.' };
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase
+    .from('job_openings')
+    .update({ title, location, type, department, description })
+    .match({ id });
+
+  if (error) {
+    console.error('❌ DB update error (jobs):', error);
+    return { error: 'Failed to update job opening.' };
+  }
+
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/career');
+
+  return { error: null };
+}
+
+// ✅ Send new job email notifications
+export async function notifySubscribersOfJob(jobId: string, jobTitle: string) {
+  const { EMAIL_USER, EMAIL_PASS, NEXT_PUBLIC_BASE_URL } = process.env;
+
+  if (!EMAIL_USER || !EMAIL_PASS) {
+    console.error('❌ Missing EMAIL_USER or EMAIL_PASS in env.');
+    return { success: false, message: 'Server email configuration is incomplete.' };
+  }
+  if (!NEXT_PUBLIC_BASE_URL) {
+    console.error('❌ Missing NEXT_PUBLIC_BASE_URL in env.');
+    return { success: false, message: 'Base URL is not configured.' };
+  }
+
+  const supabaseAdmin = createSupabaseAdminClient();
+  const { data: subscribers, error } = await supabaseAdmin
+    .from('subscriptions')
+    .select('email');
+
+  if (error) {
+    console.error('❌ Failed to fetch subscribers:', error);
+    return { success: false, message: 'Could not fetch subscribers.' };
+  }
+  if (!subscribers || subscribers.length === 0) {
+    console.warn('⚠️ No subscribers found. No emails will be sent.');
+    return { success: true, message: 'No subscribers to notify.' };
+  }
+
+  console.log(`💼 Sending job notification to ${subscribers.length} subscribers...`);
+
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS,
+    },
+  });
+
+  const careerUrl = `${NEXT_PUBLIC_BASE_URL}/career`;
+  let sentCount = 0;
+  let failedCount = 0;
+
+  for (const subscriber of subscribers) {
+    try {
+      await transporter.sendMail({
+        from: `"Digital Indian" <${EMAIL_USER}>`,
+        to: subscriber.email,
+        subject: `New Job Opportunity: ${jobTitle}`,
+        html: `
+          <h1>New Career Opportunity at Digital Indian</h1>
+          <p>We have a new opening for the position of "<strong>${jobTitle}</strong>".</p>
+          <p>If you or someone you know is interested, please visit our careers page to learn more and apply.</p>
+          <a href="${careerUrl}" 
+             style="display:inline-block;padding:10px 20px;color:white;
+                    background-color:#10b981;text-decoration:none;
+                    border-radius:5px;">
+            View Careers
+          </a>
+          <br>
+          <p>Best,<br>The Digital Indian Team</p>
+        `,
+      });
+      sentCount++;
+      console.log(`✅ Job notification email sent to ${subscriber.email}`);
+    } catch (err) {
+      failedCount++;
+      console.error(`❌ Failed to send job email to ${subscriber.email}:`, err);
+    }
+  }
+
+  console.log(`🎉 Finished sending job notifications. Sent: ${sentCount}, Failed: ${failedCount}`);
+  return { success: true, message: `Notifications sent to ${sentCount} subscribers. ${failedCount > 0 ? `${failedCount} failed.` : ''}` };
+}

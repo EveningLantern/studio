@@ -8,7 +8,7 @@ import type { User } from '@supabase/supabase-js';
 import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { LogOut, Image as ImageIcon, FileText, Trash2, Edit, Loader2, Send, Megaphone } from 'lucide-react';
+import { LogOut, Image as ImageIcon, FileText, Trash2, Edit, Loader2, Send, Megaphone, Briefcase } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { addGalleryItem, deleteGalleryItem, updateGalleryItem } from './actions';
-import { addPost, deletePost, updatePost, notifySubscribers, addUpdate, deleteUpdate, updateUpdate, notifySubscribersOfUpdate } from './blogActions';
+import { addPost, deletePost, updatePost, notifySubscribers, addUpdate, deleteUpdate, updateUpdate, notifySubscribersOfUpdate, addJobOpening, deleteJobOpening, updateJobOpening, notifySubscribersOfJob } from './blogActions';
 
 import {
   AlertDialog,
@@ -60,6 +60,16 @@ interface CompanyUpdate {
     content: string;
 }
 
+interface JobOpening {
+    id: string;
+    created_at: string;
+    title: string;
+    location: string;
+    type: string;
+    department: string;
+    description: string;
+}
+
 
 const initialFormState = { message: '' };
 
@@ -81,6 +91,7 @@ export default function AdminDashboardPage() {
   const supabase = createSupabaseBrowserClient();
   const [isNotifyPending, startNotifyTransition] = useTransition();
   const [isNotifyUpdatePending, startNotifyUpdateTransition] = useTransition();
+  const [isNotifyJobPending, startNotifyJobTransition] = useTransition();
 
   
   // Gallery State
@@ -117,6 +128,17 @@ export default function AdminDashboardPage() {
   const [updateFormState, updateFormAction] = useActionState(addUpdate, initialFormState);
   const updateFormRef = useRef<HTMLFormElement>(null);
 
+  // Jobs State
+  const [jobs, setJobs] = useState<JobOpening[]>([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+  const [jobToDelete, setJobToDelete] = useState<JobOpening | null>(null);
+  const [isDeletingJob, setIsDeletingJob] = useState(false);
+  const [jobToEdit, setJobToEdit] = useState<JobOpening | null>(null);
+  const [isUpdatingJob, setIsUpdatingJob] = useState(false);
+  const [editJobData, setEditJobData] = useState({ title: '', location: '', type: '', department: '', description: '' });
+  const [jobFormState, jobFormAction] = useActionState(addJobOpening, initialFormState);
+  const jobFormRef = useRef<HTMLFormElement>(null);
+
 
   // Fetching Data
   const fetchGalleryItems = async () => {
@@ -141,6 +163,14 @@ export default function AdminDashboardPage() {
     if (error) toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch company updates.' });
     else setUpdates(data as CompanyUpdate[]);
     setLoadingUpdates(false);
+  };
+
+  const fetchJobs = async () => {
+    setLoadingJobs(true);
+    const { data, error } = await supabase.from('job_openings').select('*').order('created_at', { ascending: false });
+    if (error) toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch job openings.' });
+    else setJobs(data as JobOpening[]);
+    setLoadingJobs(false);
   };
   
   // Form State Effects
@@ -180,11 +210,24 @@ export default function AdminDashboardPage() {
     }
   }, [updateFormState, toast]);
 
+  useEffect(() => {
+    if (jobFormState.message) {
+        if (jobFormState.message.includes('Success')) {
+            toast({ title: 'Success!', description: 'Job opening has been posted.' });
+            jobFormRef.current?.reset();
+            fetchJobs();
+        } else {
+            toast({ variant: 'destructive', title: 'Posting Failed', description: jobFormState.message });
+        }
+    }
+  }, [jobFormState, toast]);
+
 
   useEffect(() => {
     fetchGalleryItems();
     fetchPosts();
     fetchUpdates();
+    fetchJobs();
   }, []);
 
   // Auth Effect
@@ -331,6 +374,52 @@ export default function AdminDashboardPage() {
     });
   };
 
+  // Job Handlers
+  const handleDeleteJobClick = (job: JobOpening) => setJobToDelete(job);
+  const handleConfirmDeleteJob = async () => {
+      if (!jobToDelete) return;
+      setIsDeletingJob(true);
+      const result = await deleteJobOpening(jobToDelete.id);
+      if (result.error) toast({ variant: 'destructive', title: 'Deletion Failed', description: result.error });
+      else {
+          toast({ title: 'Success!', description: 'Job opening has been deleted.' });
+          await fetchJobs();
+      }
+      setIsDeletingJob(false);
+      setJobToDelete(null);
+  };
+
+  const handleEditJobClick = (job: JobOpening) => {
+      setJobToEdit(job);
+      setEditJobData({ title: job.title, location: job.location, type: job.type, department: job.department, description: job.description });
+  };
+
+  const handleUpdateJob = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!jobToEdit) return;
+      setIsUpdatingJob(true);
+      const result = await updateJobOpening(jobToEdit.id, editJobData);
+      if (result.error) toast({ variant: 'destructive', title: 'Update Failed', description: result.error });
+      else {
+          toast({ title: 'Success!', description: 'Job opening has been updated.' });
+          await fetchJobs();
+      }
+      setIsUpdatingJob(false);
+      setJobToEdit(null);
+  };
+
+  const handleNotifySubscribersOfJob = (jobId: string, jobTitle: string) => {
+      startNotifyJobTransition(async () => {
+          toast({ title: 'Sending Job Notifications...', description: 'This may take a moment.' });
+          const result = await notifySubscribersOfJob(jobId, jobTitle);
+          if (result.success) {
+              toast({ title: 'Notifications Sent!', description: result.message });
+          } else {
+              toast({ variant: 'destructive', title: 'Notification Failed', description: result.message });
+          }
+      });
+  };
+
 
   if (loading) {
     return (
@@ -359,11 +448,13 @@ export default function AdminDashboardPage() {
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="gallery" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="gallery"><ImageIcon className="mr-2 h-4 w-4" /> Manage Gallery</TabsTrigger>
                   <TabsTrigger value="blog"><FileText className="mr-2 h-4 w-4" /> Manage Blog</TabsTrigger>
                   <TabsTrigger value="updates"><Megaphone className="mr-2 h-4 w-4" />Company Updates</TabsTrigger>
+                  <TabsTrigger value="jobs"><Briefcase className="mr-2 h-4 w-4" />Manage Jobs</TabsTrigger>
                 </TabsList>
+
                 {/* Gallery Tab */}
                 <TabsContent value="gallery" className="mt-6">
                   <Card className="bg-transparent border-dashed">
@@ -401,6 +492,7 @@ export default function AdminDashboardPage() {
                     </CardContent>
                   </Card>
                 </TabsContent>
+
                 {/* Blog Tab */}
                 <TabsContent value="blog" className="mt-6">
                    <Card className="bg-transparent border-dashed">
@@ -447,6 +539,7 @@ export default function AdminDashboardPage() {
                     </CardContent>
                   </Card>
                 </TabsContent>
+
                 {/* Updates Tab */}
                 <TabsContent value="updates" className="mt-6">
                    <Card className="bg-transparent border-dashed">
@@ -487,6 +580,52 @@ export default function AdminDashboardPage() {
                     </CardContent>
                   </Card>
                 </TabsContent>
+
+                {/* Jobs Tab */}
+                <TabsContent value="jobs" className="mt-6">
+                   <Card className="bg-transparent border-dashed">
+                    <CardHeader><CardTitle>Create New Job Opening</CardTitle><CardDescription>Post a new job opportunity to your career page.</CardDescription></CardHeader>
+                    <CardContent>
+                       <form ref={jobFormRef} action={jobFormAction} className="space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2"><Label htmlFor="job-title">Job Title</Label><Input id="job-title" name="title" placeholder="e.g., Senior Telecom Engineer" required className="bg-input/50"/></div>
+                            <div className="space-y-2"><Label htmlFor="job-location">Location</Label><Input id="job-location" name="location" placeholder="e.g., Bangalore, India" required className="bg-input/50"/></div>
+                            <div className="space-y-2"><Label htmlFor="job-type">Job Type</Label><Input id="job-type" name="type" placeholder="e.g., Full-time" required className="bg-input/50"/></div>
+                            <div className="space-y-2"><Label htmlFor="job-department">Department</Label><Input id="job-department" name="department" placeholder="e.g., Engineering" required className="bg-input/50"/></div>
+                        </div>
+                        <div className="space-y-2"><Label htmlFor="job-description">Description</Label><Textarea id="job-description" name="description" placeholder="Describe the job role and requirements..." required className="bg-input/50 min-h-[100px]"/></div>
+                        <SubmitButton>Create Job Opening</SubmitButton>
+                      </form>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-transparent border-dashed mt-8">
+                    <CardHeader><CardTitle>Existing Job Openings</CardTitle></CardHeader>
+                    <CardContent>
+                      {loadingJobs ? (
+                        <div className="space-y-4">{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}</div>
+                      ) : (
+                        <div className="space-y-4">
+                          {jobs.map(job => (
+                            <div key={job.id} className="flex items-center justify-between p-3 rounded-md border bg-card/50">
+                                <div>
+                                  <p className="font-bold">{job.title}</p>
+                                  <p className="text-sm text-muted-foreground">{job.department} / {job.location}</p>
+                                </div>
+                              <div className="flex gap-2">
+                                <Button size="sm" variant="outline" onClick={() => handleNotifySubscribersOfJob(job.id, job.title)} disabled={isNotifyJobPending}>
+                                    {isNotifyJobPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                    Notify
+                                </Button>
+                                <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => handleEditJobClick(job)}><Edit className="h-4 w-4"/></Button>
+                                <Button size="icon" variant="destructive" className="h-9 w-9" onClick={() => handleDeleteJobClick(job)}><Trash2 className="h-4 w-4" /></Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
@@ -518,6 +657,15 @@ export default function AdminDashboardPage() {
       {/* Update Edit Dialog */}
       <Dialog open={!!updateToEdit} onOpenChange={() => setUpdateToEdit(null)}>
         <DialogContent><DialogHeader><DialogTitle>Edit Company Update</DialogTitle></DialogHeader><form onSubmit={handleUpdateUpdate} className="space-y-4"><div className="space-y-2"><Label htmlFor="edit-update-title">Update Title</Label><Input id="edit-update-title" value={editUpdateData.title} onChange={(e) => setEditUpdateData({...editUpdateData, title: e.target.value})} className="bg-input/50" required /></div><div className="space-y-2"><Label htmlFor="edit-update-content">Content</Label><Textarea id="edit-update-content" value={editUpdateData.content} onChange={(e) => setEditUpdateData({...editUpdateData, content: e.target.value})} className="bg-input/50 min-h-[100px]" required /></div><DialogFooter><DialogClose asChild><Button type="button" variant="ghost" disabled={isUpdatingUpdate}>Cancel</Button></DialogClose><Button type="submit" disabled={isUpdatingUpdate}>{isUpdatingUpdate ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save Changes'}</Button></DialogFooter></form></DialogContent>
+      </Dialog>
+
+      {/* Job Delete Dialog */}
+      <AlertDialog open={!!jobToDelete} onOpenChange={() => setJobToDelete(null)}>
+        <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete this job opening.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={isDeletingJob}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleConfirmDeleteJob} disabled={isDeletingJob} className="bg-destructive hover:bg-destructive/90">{isDeletingJob ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Deleting...</> : 'Delete'}</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+      </AlertDialog>
+      {/* Job Edit Dialog */}
+      <Dialog open={!!jobToEdit} onOpenChange={() => setJobToEdit(null)}>
+        <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Edit Job Opening</DialogTitle></DialogHeader><form onSubmit={handleUpdateJob} className="space-y-4"><div className="grid grid-cols-1 sm:grid-cols-2 gap-4"><div className="space-y-2"><Label htmlFor="edit-job-title">Job Title</Label><Input id="edit-job-title" value={editJobData.title} onChange={(e) => setEditJobData({...editJobData, title: e.target.value})} className="bg-input/50" required /></div><div className="space-y-2"><Label htmlFor="edit-job-location">Location</Label><Input id="edit-job-location" value={editJobData.location} onChange={(e) => setEditJobData({...editJobData, location: e.target.value})} className="bg-input/50" required /></div><div className="space-y-2"><Label htmlFor="edit-job-type">Job Type</Label><Input id="edit-job-type" value={editJobData.type} onChange={(e) => setEditJobData({...editJobData, type: e.target.value})} className="bg-input/50" required /></div><div className="space-y-2"><Label htmlFor="edit-job-department">Department</Label><Input id="edit-job-department" value={editJobData.department} onChange={(e) => setEditJobData({...editJobData, department: e.target.value})} className="bg-input/50" required /></div></div><div className="space-y-2"><Label htmlFor="edit-job-description">Description</Label><Textarea id="edit-job-description" value={editJobData.description} onChange={(e) => setEditJobData({...editJobData, description: e.target.value})} className="bg-input/50 min-h-[150px]" required /></div><DialogFooter><DialogClose asChild><Button type="button" variant="ghost" disabled={isUpdatingJob}>Cancel</Button></DialogClose><Button type="submit" disabled={isUpdatingJob}>{isUpdatingJob ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save Changes'}</Button></DialogFooter></form></DialogContent>
       </Dialog>
     </>
   );
