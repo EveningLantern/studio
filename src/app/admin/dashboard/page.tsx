@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useEffect, useState, useRef, useActionState, useTransition } from 'react';
@@ -476,8 +477,8 @@ export default function AdminDashboardPage() {
                       ) : (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {galleryItems.map(item => (
-                            <div key={item.id} className="relative group">
-                              <Image src={item.image_url} alt={item.title} width={200} height={200} className="rounded-md object-cover w-full h-32" />
+                            <div key={item.id} className="relative group aspect-square">
+                              <Image src={item.image_url} alt={item.title} fill className="rounded-md object-cover" />
                               <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleEditClick(item)}><Edit className="h-4 w-4"/></Button>
                                 <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => handleDeleteClick(item)}><Trash2 className="h-4 w-4" /></Button>
@@ -518,7 +519,9 @@ export default function AdminDashboardPage() {
                           {posts.map(post => (
                             <div key={post.id} className="flex items-center justify-between p-3 rounded-md border bg-card/50">
                               <div className="flex items-center gap-4">
-                                <Image src={post.image_url} alt={post.title} width={80} height={60} className="rounded-md object-cover w-20 h-16" />
+                                <div className="relative w-20 h-16 rounded-md overflow-hidden">
+                                  <Image src={post.image_url} alt={post.title} fill className="object-cover" />
+                                </div>
                                 <div>
                                   <p className="font-bold">{post.title}</p>
                                   <p className="text-sm text-muted-foreground">{post.author} / {post.category}</p>
