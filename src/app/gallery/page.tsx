@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Footer } from '@/components/Footer';
-import { supabase } from '@/lib/supabase';
+import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Dialog,
@@ -25,6 +25,7 @@ export default function GalleryPage() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
+  const supabase = createSupabaseBrowserClient();
 
   useEffect(() => {
     const fetchGalleryItems = async () => {
@@ -43,7 +44,7 @@ export default function GalleryPage() {
     };
 
     fetchGalleryItems();
-  }, []);
+  }, [supabase]);
 
   return (
     <div className="p-4 md:p-6 lg:p-8">

@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Post {
@@ -24,6 +24,7 @@ interface Post {
 export default function BlogPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const supabase = createSupabaseBrowserClient();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -42,7 +43,7 @@ export default function BlogPage() {
     };
 
     fetchPosts();
-  }, []);
+  }, [supabase]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -122,5 +123,3 @@ export default function BlogPage() {
     </div>
   );
 }
-
-    

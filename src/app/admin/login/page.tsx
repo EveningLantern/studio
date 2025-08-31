@@ -18,7 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/lib/supabase';
+import { createSupabaseBrowserClient } from '@/lib/supabase';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -32,6 +32,7 @@ const formSchema = z.object({
 export default function AdminLoginPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,6 +61,7 @@ export default function AdminLoginPage() {
         description: 'Redirecting to the admin dashboard.',
       });
       router.push('/admin/dashboard');
+      router.refresh();
     }
   }
 

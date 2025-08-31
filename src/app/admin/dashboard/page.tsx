@@ -4,8 +4,8 @@
 import { useEffect, useState, useRef, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { User } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
+import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { LogOut, Image as ImageIcon, FileText, Trash2, Edit, Loader2 } from 'lucide-react';
@@ -70,6 +70,7 @@ export default function AdminDashboardPage() {
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const supabase = createSupabaseBrowserClient();
   
   // Gallery State
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
@@ -151,7 +152,7 @@ export default function AdminDashboardPage() {
       setLoading(false);
     });
     return () => subscription.unsubscribe();
-  }, [router]);
+  }, [router, supabase]);
 
   // Handlers
   const handleLogout = async () => {
@@ -362,6 +363,3 @@ export default function AdminDashboardPage() {
     </>
   );
 }
-    
-
-    
