@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,10 +15,17 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { createSupabaseBrowserClient } from '@/lib/supabase';
 
+// ✅ Define schema with Zod
 const formSchema = z.object({
   email: z.string().email({
     message: 'Please enter a valid email address.',
@@ -34,6 +40,7 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
+  // ✅ Initialize form with default values
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,44 +49,58 @@ export default function AdminLoginPage() {
     },
   });
 
+  // ✅ Handle form submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: values.email,
-      password: values.password,
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
 
-    if (error) {
-      console.error('Authentication error:', error);
+      if (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: error.message || 'Invalid email or password.',
+        });
+        return;
+      }
+
+      if (data.user) {
+        toast({
+          title: 'Login Successful',
+          description: 'Redirecting to the admin dashboard...',
+        });
+        router.push('/admin/dashboard');
+      }
+    } catch (err) {
+      console.error('Unexpected login error:', err);
       toast({
         variant: 'destructive',
-        title: 'Login Failed',
-        description: error.message || 'An unexpected error occurred.',
+        title: 'Unexpected Error',
+        description: 'Something went wrong. Please try again.',
       });
-    } else {
-      toast({
-        title: 'Login Successful',
-        description: 'Redirecting to the admin dashboard.',
-      });
-      router.push('/admin/dashboard');
-      router.refresh();
     }
   }
 
   return (
-    <div className="flex min-h-full items-center justify-center p-4 md:p-6 lg:p-8">
-      <Card className="w-full max-w-md bg-transparent">
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-card shadow-lg">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 rounded-full bg-primary/10 p-4 text-primary">
-            <Lock className="h-8 w-8" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Lock className="h-6 w-6" />
           </div>
-          <CardTitle className="font-headline text-2xl">Admin Login</CardTitle>
+          <CardTitle className="text-2xl font-semibold">
+            Admin Login
+          </CardTitle>
           <CardDescription>
-            Please enter your credentials to access the dashboard.
+            Enter your credentials to access the dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Email */}
               <FormField
                 control={form.control}
                 name="email"
@@ -91,13 +112,15 @@ export default function AdminLoginPage() {
                         type="email"
                         placeholder="admin@example.com"
                         {...field}
-                        className="bg-input/50"
+                        className="bg-input"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {/* Password */}
               <FormField
                 control={form.control}
                 name="password"
@@ -109,13 +132,15 @@ export default function AdminLoginPage() {
                         type="password"
                         placeholder="********"
                         {...field}
-                        className="bg-input/50"
+                        className="bg-input"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {/* Submit Button */}
               <Button type="submit" size="lg" className="w-full">
                 Sign In
               </Button>

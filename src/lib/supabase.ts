@@ -1,17 +1,14 @@
-
+// src/lib/supabaseClient.ts
 import { createBrowserClient } from '@supabase/ssr'
 
-// Used for client components
+// Client-side Supabase client. Safe to use in Components and Pages
 export function createSupabaseBrowserClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase URL and Anon Key must be defined in your environment variables.');
+    throw new Error('Supabase URL and Anon Key must be defined in your environment variables.')
   }
 
-  return createBrowserClient(
-    supabaseUrl,
-    supabaseAnonKey
-  )
+  return createBrowserClient(supabaseUrl, supabaseAnonKey)
 }
