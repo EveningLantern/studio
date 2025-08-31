@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -55,24 +56,17 @@ export function VerticalHeader() {
               {navLinks.map((link) =>
                 link.subLinks ? (
                   <DropdownMenu key={link.label} open={isServicesMenuOpen} onOpenChange={setServicesMenuOpen}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            onMouseEnter={() => setServicesMenuOpen(true)}
-                            onMouseLeave={() => setServicesMenuOpen(false)}
-                            variant={pathname.startsWith(link.href) ? 'default' : 'ghost'}
-                            size="icon"
-                            className="rounded-full transition-all hover:shadow-glow hover:bg-primary/20 w-12 h-12"
-                          >
-                            <link.icon />
-                          </Button>
-                        </DropdownMenuTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="right">
-                        <p>{link.label}</p>
-                      </TooltipContent>
-                    </Tooltip>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        onMouseEnter={() => setServicesMenuOpen(true)}
+                        onMouseLeave={() => setServicesMenuOpen(false)}
+                        variant={pathname.startsWith(link.href) ? 'default' : 'ghost'}
+                        size="icon"
+                        className="rounded-full transition-all hover:shadow-glow hover:bg-primary/20 w-12 h-12"
+                      >
+                        <link.icon />
+                      </Button>
+                    </DropdownMenuTrigger>
                     <DropdownMenuContent 
                       onMouseEnter={() => setServicesMenuOpen(true)}
                       onMouseLeave={() => setServicesMenuOpen(false)}
