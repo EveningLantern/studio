@@ -129,18 +129,29 @@ const Chatbot: React.FC = () => {
 
   const ChatbotButton: React.FC = () => {
     const constraintsRef = useRef(null);
+    const isDraggingRef = useRef(false);
+
+    const handleButtonClick = () => {
+      if (!isDraggingRef.current) {
+        setIsOpen(true);
+      }
+    };
 
     return (
-      // Set the parent as the drag constraint area
       <motion.div ref={constraintsRef} className="fixed inset-0 pointer-events-none z-50">
         <motion.div
           drag
           dragConstraints={constraintsRef}
           whileTap={{ scale: 0.9 }}
+          onDragStart={() => { isDraggingRef.current = true; }}
+          onDragEnd={() => {
+            // Set a short timeout to distinguish between a drag and a click
+            setTimeout(() => { isDraggingRef.current = false; }, 50);
+          }}
           className="fixed bottom-20 right-6 z-50 pointer-events-auto md:bottom-6"
         >
           <Button
-            onClick={() => setIsOpen(true)}
+            onClick={handleButtonClick}
             className="h-16 w-16 rounded-full shadow-lg bg-gradient-to-br from-primary to-accent text-primary-foreground"
             aria-label="Open chatbot"
           >
