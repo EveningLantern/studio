@@ -1,4 +1,3 @@
-
 'use server';
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
@@ -7,45 +6,47 @@ import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
 import nodemailer from 'nodemailer';
 
-// This function creates a Supabase client for server-side operations
+// ✅ Create Supabase client with Service Role Key
 function createSupabaseAdminClient() {
   const cookieStore = cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!, // must be server-only key
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
+        async get(name: string) {
+          return (await cookieStore).get(name)?.value;
         },
-        set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options })
+        async set(name: string, value: string, options: CookieOptions) {
+          (await cookieStore).set({ name, value, ...options });
         },
-        remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: '', ...options })
+        async remove(name: string, options: CookieOptions) {
+          (await cookieStore).set({ name, value: '', ...options });
         },
       },
     }
   );
 }
 
-// Helper function to handle Supabase file upload
+// ✅ File upload helper
 async function uploadFile(file: File, bucket: string) {
   const supabaseAdmin = createSupabaseAdminClient();
   const fileExtension = file.name.split('.').pop();
   const fileName = `${uuidv4()}.${fileExtension}`;
 
-  const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+  const { error: uploadError } = await supabaseAdmin.storage
     .from(bucket)
     .upload(fileName, file);
 
   if (uploadError) {
-    console.error(`Storage Error in bucket ${bucket}:`, uploadError);
+    console.error(`❌ Storage upload error [${bucket}]:`, uploadError);
     return { data: null, error: `Failed to upload image to ${bucket}.` };
   }
-  
-  const { data: urlData } = supabaseAdmin.storage.from(bucket).getPublicUrl(fileName);
-  
+
+  const { data: urlData } = supabaseAdmin.storage
+    .from(bucket)
+    .getPublicUrl(fileName);
+
   if (!urlData.publicUrl) {
     return { data: null, error: 'Failed to get public URL for the image.' };
   }
@@ -53,66 +54,77 @@ async function uploadFile(file: File, bucket: string) {
   return { data: { url: urlData.publicUrl, fileName }, error: null };
 }
 
-// Helper function to send notification emails
-async function sendNewPostNotification(post: { id: string; title: string; }) {
+// ✅ Send new post email notifications
+async function sendNewPostNotification(post: { id: string; title: string }) {
   const { EMAIL_USER, EMAIL_PASS, NEXT_PUBLIC_BASE_URL } = process.env;
 
   if (!EMAIL_USER || !EMAIL_PASS) {
-      console.error('Email credentials are not set. Cannot send post notifications.');
-      return;
+    console.error('❌ Missing EMAIL_USER or EMAIL_PASS in env.');
+    return;
   }
   if (!NEXT_PUBLIC_BASE_URL) {
-      console.error('NEXT_PUBLIC_BASE_URL is not set. Cannot create post links for emails.');
-      return;
+    console.error('❌ Missing NEXT_PUBLIC_BASE_URL in env.');
+    return;
   }
 
   const supabaseAdmin = createSupabaseAdminClient();
-  const { data: subscribers, error } = await supabaseAdmin.from('subscriptions').select('email');
+  const { data: subscribers, error } = await supabaseAdmin
+    .from('subscriptions')
+    .select('email');
 
-  if (error || !subscribers || subscribers.length === 0) {
-      console.error('Could not fetch subscribers or no subscribers to notify.', error);
-      return;
+  if (error) {
+    console.error('❌ Failed to fetch subscribers:', error);
+    return;
   }
+  if (!subscribers || subscribers.length === 0) {
+    console.warn('⚠️ No subscribers found. No emails will be sent.');
+    return;
+  }
+
+  console.log(`📧 Sending notification to ${subscribers.length} subscribers...`);
 
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
-        user: EMAIL_USER,
-        pass: EMAIL_PASS,
+      user: EMAIL_USER,
+      pass: EMAIL_PASS, // must be Gmail App Password
     },
   });
 
   const postUrl = `${NEXT_PUBLIC_BASE_URL}/blog/${post.id}`;
-  
+
   for (const subscriber of subscribers) {
-    const mailOptions = {
+    try {
+      await transporter.sendMail({
         from: `"Digital Indian" <${EMAIL_USER}>`,
         to: subscriber.email,
         subject: `New Blog Post: ${post.title}`,
         html: `
-            <h1>New Post on Digital Indian Blog</h1>
-            <p>We've just published a new article titled "<strong>${post.title}</strong>".</p>
-            <p>We think you'll find it interesting!</p>
-            <a href="${postUrl}" style="display: inline-block; padding: 10px 20px; color: white; background-color: #f97316; text-decoration: none; border-radius: 5px;">Read Now</a>
-            <br>
-            <p>Or copy and paste this link into your browser: ${postUrl}</p>
-            <br>
-            <p>Best regards,<br>The Digital Indian Team</p>
+          <h1>New Post on Digital Indian Blog</h1>
+          <p>We've just published "<strong>${post.title}</strong>".</p>
+          <a href="${postUrl}" 
+             style="display:inline-block;padding:10px 20px;color:white;
+                    background-color:#f97316;text-decoration:none;
+                    border-radius:5px;">
+            Read Now
+          </a>
+          <p>Or copy this link: ${postUrl}</p>
+          <br>
+          <p>Best,<br>The Digital Indian Team</p>
         `,
-    };
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log(`Notification email sent to ${subscriber.email}`);
+      });
+      console.log(`✅ Email sent to ${subscriber.email}`);
     } catch (err) {
-      console.error(`Failed to send email to ${subscriber.email}:`, err);
+      console.error(`❌ Failed to send email to ${subscriber.email}:`, err);
     }
   }
-  console.log(`Finished sending new post notifications.`);
+
+  console.log(`🎉 Finished sending notifications.`);
 }
 
-// Action to add a new blog post
+// ✅ Add new post
 export async function addPost(prevState: any, formData: FormData) {
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
@@ -121,7 +133,7 @@ export async function addPost(prevState: any, formData: FormData) {
   const imageFile = formData.get('image') as File;
 
   if (!title || !content || !author || !category || !imageFile || imageFile.size === 0) {
-    return { message: 'All fields, including an image, are required.' };
+    return { message: 'All fields including image are required.' };
   }
 
   const { data: uploadResult, error: uploadError } = await uploadFile(imageFile, 'posts');
@@ -132,91 +144,72 @@ export async function addPost(prevState: any, formData: FormData) {
   const supabaseAdmin = createSupabaseAdminClient();
   const { data: postData, error: dbError } = await supabaseAdmin
     .from('posts')
-    .insert([{ 
-        title, 
-        content, 
-        author, 
-        category, 
-        image_url: uploadResult.url 
-    }])
+    .insert([{ title, content, author, category, image_url: uploadResult.url }])
     .select()
     .single();
 
   if (dbError) {
-    console.error('Database Error:', dbError);
-    return { message: 'Failed to save post to the database.' };
+    console.error('❌ Database insert error:', dbError);
+    return { message: 'Failed to save post to DB.' };
   }
-  
+
   if (postData) {
-    // Fire-and-forget: run in the background without awaiting
-    (async () => {
-        await sendNewPostNotification(postData);
-    })();
+    // ✅ This is now a non-blocking call
+    sendNewPostNotification(postData);
   }
-  
-  const result = { message: 'Success! Post created.' };
 
   revalidatePath('/admin/dashboard');
   revalidatePath('/blog');
 
-  return result;
+  return { message: '✅ Success! Post created.' };
 }
 
-// Action to delete a blog post
+// ✅ Delete post
 export async function deletePost(id: string, imageUrl: string) {
-    const supabaseAdmin = createSupabaseAdminClient();
-    
-    const fileName = imageUrl.split('/').pop();
-    if (!fileName) {
-        return { error: 'Could not determine file name from URL.' };
-    }
+  const supabaseAdmin = createSupabaseAdminClient();
 
-    const { error: storageError } = await supabaseAdmin.storage
-      .from('posts')
-      .remove([fileName]);
+  const fileName = imageUrl.split('/').pop();
+  if (fileName) {
+    const { error: storageError } = await supabaseAdmin.storage.from('posts').remove([fileName]);
+    if (storageError) console.error('❌ Storage deletion error:', storageError);
+  }
 
-    if (storageError) {
-      console.error('Storage Deletion Error:', storageError);
-    }
+  const { error: dbError } = await supabaseAdmin.from('posts').delete().match({ id });
+  if (dbError) {
+    console.error('❌ DB deletion error:', dbError);
+    return { error: 'Failed to delete post from DB.' };
+  }
 
-    const { error: dbError } = await supabaseAdmin
-        .from('posts')
-        .delete()
-        .match({ id });
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/blog');
 
-    if (dbError) {
-        console.error('Database Deletion Error:', dbError);
-        return { error: 'Failed to delete post from the database.' };
-    }
-
-    revalidatePath('/admin/dashboard');
-    revalidatePath('/blog');
-    
-    return { error: null };
+  return { error: null };
 }
 
-// Action to update a blog post
-export async function updatePost(id: string, postData: { title: string; content: string; author: string; category: string }) {
-    const { title, content, author, category } = postData;
-    if (!title || !content || !author || !category) {
-        return { error: 'All fields are required.' };
-    }
-    
-    const supabaseAdmin = createSupabaseAdminClient();
+// ✅ Update post
+export async function updatePost(
+  id: string,
+  postData: { title: string; content: string; author: string; category: string }
+) {
+  const { title, content, author, category } = postData;
+  if (!title || !content || !author || !category) {
+    return { error: 'All fields required.' };
+  }
 
-    const { error } = await supabaseAdmin
-        .from('posts')
-        .update({ title, content, author, category })
-        .match({ id });
+  const supabaseAdmin = createSupabaseAdminClient();
+  const { error } = await supabaseAdmin
+    .from('posts')
+    .update({ title, content, author, category })
+    .match({ id });
 
-    if (error) {
-        console.error('Database Update Error:', error);
-        return { error: 'Failed to update post.' };
-    }
-    
-    revalidatePath('/admin/dashboard');
-    revalidatePath('/blog');
-    revalidatePath(`/blog/${id}`); // Assuming a dynamic route for single posts exists or will exist
+  if (error) {
+    console.error('❌ DB update error:', error);
+    return { error: 'Failed to update post.' };
+  }
 
-    return { error: null };
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/blog');
+  revalidatePath(`/blog/${id}`);
+
+  return { error: null };
 }

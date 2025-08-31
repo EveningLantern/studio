@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, AwaitedReactNode, Key } from 'react';
 
 interface PostPageProps {
   params: {
@@ -66,7 +67,7 @@ export default async function PostPage({ params }: PostPageProps) {
       
       <div className="max-w-4xl mx-auto p-8 md:p-12">
         <article className="prose prose-lg dark:prose-invert max-w-none text-foreground text-xl leading-relaxed space-y-6">
-            {post.content.split('\n').map((paragraph, index) => (
+            {post.content.split('\n').map((paragraph: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined, index: Key | null | undefined) => (
                 <p key={index}>{paragraph}</p>
             ))}
         </article>
