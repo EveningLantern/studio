@@ -76,6 +76,11 @@ const Chatbot: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'submitting'>('idle');
   const scrollAreaRef = useRef<React.ElementRef<typeof ScrollAreaPrimitive> | null>(null);
   const chatWindowRef = useRef<HTMLDivElement | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -122,22 +127,37 @@ const Chatbot: React.FC = () => {
     };
   }, [isOpen]);
 
-  const ChatbotButton: React.FC = () => (
-    <Button
-      onClick={() => setIsOpen(true)}
-      className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg z-50 bg-gradient-to-br from-primary to-accent text-primary-foreground"
-      aria-label="Open chatbot"
-    >
-      <MessageCircle className="h-8 w-8" />
-    </Button>
-  );
+  const ChatbotButton: React.FC = () => {
+    const constraintsRef = useRef(null);
+
+    return (
+      // Set the parent as the drag constraint area
+      <motion.div ref={constraintsRef} className="fixed inset-0 pointer-events-none z-50">
+        <motion.div
+          drag
+          dragConstraints={constraintsRef}
+          whileTap={{ scale: 0.9 }}
+          className="fixed bottom-20 right-6 z-50 pointer-events-auto md:bottom-6"
+        >
+          <Button
+            onClick={() => setIsOpen(true)}
+            className="h-16 w-16 rounded-full shadow-lg bg-gradient-to-br from-primary to-accent text-primary-foreground"
+            aria-label="Open chatbot"
+          >
+            <MessageCircle className="h-8 w-8" />
+          </Button>
+        </motion.div>
+      </motion.div>
+    );
+  };
 
   const ChatWindow: React.FC = () => (
     <motion.div 
       ref={chatWindowRef}
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 50, scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className="fixed bottom-0 right-0 w-full sm:bottom-6 sm:right-6 sm:w-96 h-full sm:h-auto max-h-full sm:max-h-[80vh] flex flex-col glassmorphism rounded-t-lg sm:rounded-lg shadow-2xl shadow-primary/20 z-50 overflow-hidden"
     >
       <header className="flex justify-between items-center p-4 bg-primary/90 text-primary-foreground rounded-t-lg">
@@ -210,6 +230,10 @@ const Chatbot: React.FC = () => {
       <ChatInput onSendMessage={handleSendMessage} isSubmitting={status === 'submitting'} />
     </motion.div>
   );
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
