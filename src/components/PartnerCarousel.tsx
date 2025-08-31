@@ -36,7 +36,7 @@ export function PartnerCarousel() {
                 alt={partner.name}
                 width={150}
                 height={50}
-                className="object-contain filter grayscale transition-all duration-300 hover:grayscale-0 hover:scale-110"
+                className="object-contain transition-all duration-300 hover:scale-110"
               />
             </div>
           </CarouselItem>
