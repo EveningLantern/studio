@@ -85,27 +85,28 @@ async function sendNewPostNotification(post: { id: string; title: string; }) {
   });
 
   const postUrl = `${NEXT_PUBLIC_BASE_URL}/blog/${post.id}`;
-
-  const mailOptions = {
-      from: `"Digital Indian" <${EMAIL_USER}>`,
-      subject: `New Blog Post: ${post.title}`,
-      html: `
-          <h1>New Post on Digital Indian Blog</h1>
-          <p>We've just published a new article titled "<strong>${post.title}</strong>".</p>
-          <p>We think you'll find it interesting!</p>
-          <a href="${postUrl}" style="display: inline-block; padding: 10px 20px; color: white; background-color: #f97316; text-decoration: none; border-radius: 5px;">Read Now</a>
-          <br>
-          <p>Or copy and paste this link into your browser: ${postUrl}</p>
-          <br>
-          <p>Best regards,<br>The Digital Indian Team</p>
-      `,
-  };
-
-  // BCC all subscribers
+  
   const emails = subscribers.map(s => s.email);
+
   if (emails.length > 0) {
+    const mailOptions = {
+        from: `"Digital Indian" <${EMAIL_USER}>`,
+        to: EMAIL_USER, // Required field
+        bcc: emails,
+        subject: `New Blog Post: ${post.title}`,
+        html: `
+            <h1>New Post on Digital Indian Blog</h1>
+            <p>We've just published a new article titled "<strong>${post.title}</strong>".</p>
+            <p>We think you'll find it interesting!</p>
+            <a href="${postUrl}" style="display: inline-block; padding: 10px 20px; color: white; background-color: #f97316; text-decoration: none; border-radius: 5px;">Read Now</a>
+            <br>
+            <p>Or copy and paste this link into your browser: ${postUrl}</p>
+            <br>
+            <p>Best regards,<br>The Digital Indian Team</p>
+        `,
+    };
     try {
-        await transporter.sendMail({ ...mailOptions, to: EMAIL_USER, bcc: emails });
+        await transporter.sendMail(mailOptions);
         console.log(`New post notification sent to ${emails.length} subscribers.`);
     } catch (e) {
         console.error('Failed to send new post notification emails:', e);
