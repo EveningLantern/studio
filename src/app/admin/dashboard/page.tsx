@@ -8,7 +8,7 @@ import type { User } from '@supabase/supabase-js';
 import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { LogOut, Image as ImageIcon, FileText, Trash2, Edit, Loader2, Send } from 'lucide-react';
+import { LogOut, Image as ImageIcon, FileText, Trash2, Edit, Loader2, Send, Megaphone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { addGalleryItem, deleteGalleryItem, updateGalleryItem } from './actions';
-import { addPost, deletePost, updatePost, notifySubscribers } from './blogActions';
+import { addPost, deletePost, updatePost, notifySubscribers, addUpdate, deleteUpdate, updateUpdate } from './blogActions';
 
 import {
   AlertDialog,
@@ -52,6 +52,14 @@ interface Post {
     category: string;
     image_url: string;
 }
+
+interface CompanyUpdate {
+    id: string;
+    created_at: string;
+    title: string;
+    content: string;
+}
+
 
 const initialFormState = { message: '' };
 
@@ -97,6 +105,17 @@ export default function AdminDashboardPage() {
   const [blogFormState, blogFormAction] = useActionState(addPost, initialFormState);
   const blogFormRef = useRef<HTMLFormElement>(null);
 
+  // Updates State
+  const [updates, setUpdates] = useState<CompanyUpdate[]>([]);
+  const [loadingUpdates, setLoadingUpdates] = useState(true);
+  const [updateToDelete, setUpdateToDelete] = useState<CompanyUpdate | null>(null);
+  const [isDeletingUpdate, setIsDeletingUpdate] = useState(false);
+  const [updateToEdit, setUpdateToEdit] = useState<CompanyUpdate | null>(null);
+  const [isUpdatingUpdate, setIsUpdatingUpdate] = useState(false);
+  const [editUpdateData, setEditUpdateData] = useState({ title: '', content: '' });
+  const [updateFormState, updateFormAction] = useActionState(addUpdate, initialFormState);
+  const updateFormRef = useRef<HTMLFormElement>(null);
+
 
   // Fetching Data
   const fetchGalleryItems = async () => {
@@ -113,6 +132,14 @@ export default function AdminDashboardPage() {
     if (error) toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch blog posts.' });
     else setPosts(data as Post[]);
     setLoadingPosts(false);
+  };
+  
+  const fetchUpdates = async () => {
+    setLoadingUpdates(true);
+    const { data, error } = await supabase.from('company_updates').select('*').order('created_at', { ascending: false });
+    if (error) toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch company updates.' });
+    else setUpdates(data as CompanyUpdate[]);
+    setLoadingUpdates(false);
   };
   
   // Form State Effects
@@ -140,10 +167,23 @@ export default function AdminDashboardPage() {
     }
   }, [blogFormState, toast]);
 
+  useEffect(() => {
+    if (updateFormState.message) {
+        if (updateFormState.message.includes('Success')) {
+            toast({ title: 'Success!', description: 'Company update has been created.' });
+            updateFormRef.current?.reset();
+            fetchUpdates();
+        } else {
+            toast({ variant: 'destructive', title: 'Creation Failed', description: updateFormState.message });
+        }
+    }
+  }, [updateFormState, toast]);
+
 
   useEffect(() => {
     fetchGalleryItems();
     fetchPosts();
+    fetchUpdates();
   }, []);
 
   // Auth Effect
@@ -244,6 +284,41 @@ export default function AdminDashboardPage() {
     });
   };
 
+  // Update Handlers
+  const handleDeleteUpdateClick = (update: CompanyUpdate) => setUpdateToDelete(update);
+  const handleConfirmDeleteUpdate = async () => {
+    if (!updateToDelete) return;
+    setIsDeletingUpdate(true);
+    const result = await deleteUpdate(updateToDelete.id);
+    if (result.error) toast({ variant: 'destructive', title: 'Deletion Failed', description: result.error });
+    else {
+      toast({ title: 'Success!', description: 'Company update has been deleted.' });
+      await fetchUpdates();
+    }
+    setIsDeletingUpdate(false);
+    setUpdateToDelete(null);
+  };
+
+  const handleEditUpdateClick = (update: CompanyUpdate) => {
+    setUpdateToEdit(update);
+    setEditUpdateData({ title: update.title, content: update.content });
+  };
+
+  const handleUpdateUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!updateToEdit) return;
+    setIsUpdatingUpdate(true);
+    const result = await updateUpdate(updateToEdit.id, editUpdateData);
+    if (result.error) toast({ variant: 'destructive', title: 'Update Failed', description: result.error });
+    else {
+      toast({ title: 'Success!', description: 'Company update has been updated.' });
+      await fetchUpdates();
+    }
+    setIsUpdatingUpdate(false);
+    setUpdateToEdit(null);
+  };
+
+
   if (loading) {
     return (
         <div className="p-4 md:p-6 lg:p-8">
@@ -271,9 +346,10 @@ export default function AdminDashboardPage() {
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="gallery" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="gallery"><ImageIcon className="mr-2 h-4 w-4" /> Manage Gallery</TabsTrigger>
                   <TabsTrigger value="blog"><FileText className="mr-2 h-4 w-4" /> Manage Blog</TabsTrigger>
+                  <TabsTrigger value="updates"><Megaphone className="mr-2 h-4 w-4" />Company Updates</TabsTrigger>
                 </TabsList>
                 {/* Gallery Tab */}
                 <TabsContent value="gallery" className="mt-6">
@@ -358,6 +434,42 @@ export default function AdminDashboardPage() {
                     </CardContent>
                   </Card>
                 </TabsContent>
+                {/* Updates Tab */}
+                <TabsContent value="updates" className="mt-6">
+                   <Card className="bg-transparent border-dashed">
+                    <CardHeader><CardTitle>Add New Company Update</CardTitle><CardDescription>Post a short update or announcement. It will appear on your blog page.</CardDescription></CardHeader>
+                    <CardContent>
+                       <form ref={updateFormRef} action={updateFormAction} className="space-y-6">
+                        <div className="space-y-2"><Label htmlFor="update-title">Update Title</Label><Input id="update-title" name="title" placeholder="e.g., New Partnership Announcement" required className="bg-input/50"/></div>
+                        <div className="space-y-2"><Label htmlFor="update-content">Content</Label><Textarea id="update-content" name="content" placeholder="Write your company update here..." required className="bg-input/50 min-h-[100px]"/></div>
+                        <SubmitButton>Create Update</SubmitButton>
+                      </form>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-transparent border-dashed mt-8">
+                    <CardHeader><CardTitle>Existing Company Updates</CardTitle></CardHeader>
+                    <CardContent>
+                      {loadingUpdates ? (
+                        <div className="space-y-4">{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}</div>
+                      ) : (
+                        <div className="space-y-4">
+                          {updates.map(update => (
+                            <div key={update.id} className="flex items-center justify-between p-3 rounded-md border bg-card/50">
+                                <div>
+                                  <p className="font-bold">{update.title}</p>
+                                  <p className="text-sm text-muted-foreground line-clamp-1">{update.content}</p>
+                                </div>
+                              <div className="flex gap-2">
+                                <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => handleEditUpdateClick(update)}><Edit className="h-4 w-4"/></Button>
+                                <Button size="icon" variant="destructive" className="h-9 w-9" onClick={() => handleDeleteUpdateClick(update)}><Trash2 className="h-4 w-4" /></Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
@@ -380,6 +492,15 @@ export default function AdminDashboardPage() {
       {/* Blog Edit Dialog */}
       <Dialog open={!!postToEdit} onOpenChange={() => setPostToEdit(null)}>
         <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Edit Blog Post</DialogTitle></DialogHeader><form onSubmit={handleUpdatePost} className="space-y-4"><div className="space-y-2"><Label htmlFor="edit-post-title">Post Title</Label><Input id="edit-post-title" value={editPostData.title} onChange={(e) => setEditPostData({...editPostData, title: e.target.value})} className="bg-input/50" required /></div><div className="space-y-2"><Label htmlFor="edit-post-author">Author</Label><Input id="edit-post-author" value={editPostData.author} onChange={(e) => setEditPostData({...editPostData, author: e.target.value})} className="bg-input/50" required /></div><div className="space-y-2"><Label htmlFor="edit-post-category">Category</Label><Input id="edit-post-category" value={editPostData.category} onChange={(e) => setEditPostData({...editPostData, category: e.target.value})} className="bg-input/50" required /></div><div className="space-y-2"><Label htmlFor="edit-post-content">Content</Label><Textarea id="edit-post-content" value={editPostData.content} onChange={(e) => setEditPostData({...editPostData, content: e.target.value})} className="bg-input/50 min-h-[200px]" required /></div><DialogFooter><DialogClose asChild><Button type="button" variant="ghost" disabled={isUpdatingPost}>Cancel</Button></DialogClose><Button type="submit" disabled={isUpdatingPost}>{isUpdatingPost ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save Changes'}</Button></DialogFooter></form></DialogContent>
+      </Dialog>
+
+      {/* Update Delete Dialog */}
+      <AlertDialog open={!!updateToDelete} onOpenChange={() => setUpdateToDelete(null)}>
+        <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete this company update.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={isDeletingUpdate}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleConfirmDeleteUpdate} disabled={isDeletingUpdate} className="bg-destructive hover:bg-destructive/90">{isDeletingUpdate ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Deleting...</> : 'Delete'}</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+      </AlertDialog>
+      {/* Update Edit Dialog */}
+      <Dialog open={!!updateToEdit} onOpenChange={() => setUpdateToEdit(null)}>
+        <DialogContent><DialogHeader><DialogTitle>Edit Company Update</DialogTitle></DialogHeader><form onSubmit={handleUpdateUpdate} className="space-y-4"><div className="space-y-2"><Label htmlFor="edit-update-title">Update Title</Label><Input id="edit-update-title" value={editUpdateData.title} onChange={(e) => setEditUpdateData({...editUpdateData, title: e.target.value})} className="bg-input/50" required /></div><div className="space-y-2"><Label htmlFor="edit-update-content">Content</Label><Textarea id="edit-update-content" value={editUpdateData.content} onChange={(e) => setEditUpdateData({...editUpdateData, content: e.target.value})} className="bg-input/50 min-h-[100px]" required /></div><DialogFooter><DialogClose asChild><Button type="button" variant="ghost" disabled={isUpdatingUpdate}>Cancel</Button></DialogClose><Button type="submit" disabled={isUpdatingUpdate}>{isUpdatingUpdate ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save Changes'}</Button></DialogFooter></form></DialogContent>
       </Dialog>
     </>
   );

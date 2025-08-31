@@ -178,7 +178,6 @@ export async function addPost(prevState: any, formData: FormData) {
   revalidatePath('/admin/dashboard');
   revalidatePath('/blog');
 
-  // IMPORTANT: We no longer send emails automatically. This is now a manual admin action.
   return { message: '✅ Success! Post created. You can now notify subscribers.' };
 }
 
@@ -228,6 +227,74 @@ export async function updatePost(
   revalidatePath('/admin/dashboard');
   revalidatePath('/blog');
   revalidatePath(`/blog/${id}`);
+
+  return { error: null };
+}
+
+
+// --- Company Updates Actions ---
+
+// ✅ Add new update
+export async function addUpdate(prevState: any, formData: FormData) {
+  const title = formData.get('title') as string;
+  const content = formData.get('content') as string;
+
+  if (!title || !content) {
+    return { message: 'Title and content are required.' };
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase
+    .from('company_updates')
+    .insert([{ title, content }]);
+
+  if (error) {
+    console.error('❌ Database insert error (updates):', error);
+    return { message: 'Failed to save update to DB.' };
+  }
+
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/blog');
+
+  return { message: '✅ Success! Company update has been created.' };
+}
+
+// ✅ Delete update
+export async function deleteUpdate(id: string) {
+  const supabase = createSupabaseServerClient();
+
+  const { error } = await supabase.from('company_updates').delete().match({ id });
+  if (error) {
+    console.error('❌ DB deletion error (updates):', error);
+    return { error: 'Failed to delete update from DB.' };
+  }
+
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/blog');
+
+  return { error: null };
+}
+
+// ✅ Update update
+export async function updateUpdate(id: string, updateData: { title: string; content: string }) {
+  const { title, content } = updateData;
+  if (!title || !content) {
+    return { error: 'Title and content are required.' };
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase
+    .from('company_updates')
+    .update({ title, content })
+    .match({ id });
+
+  if (error) {
+    console.error('❌ DB update error (updates):', error);
+    return { error: 'Failed to update company update.' };
+  }
+
+  revalidatePath('/admin/dashboard');
+  revalidatePath('/blog');
 
   return { error: null };
 }
