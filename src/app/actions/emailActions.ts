@@ -1,6 +1,9 @@
 'use server';
 
 import nodemailer from 'nodemailer';
+import { z } from 'zod';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 export async function sendWelcomeEmail(email: string) {
     const { EMAIL_USER, EMAIL_PASS } = process.env;
@@ -38,4 +41,64 @@ export async function sendWelcomeEmail(email: string) {
     } catch (error) {
         console.error('Error sending welcome email:', error);
     }
+}
+
+const emailSchema = z.string().email({ message: "Please enter a valid email address." });
+
+export async function subscribeToNewsletter(prevState: any, formData: FormData) {
+  const email = formData.get('email') as string;
+
+  const validation = emailSchema.safeParse(email);
+
+  if (!validation.success) {
+    return {
+      message: validation.error.errors[0].message,
+      status: 'error'
+    };
+  }
+  
+  const cookieStore = cookies();
+  const supabaseAdmin = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        },
+      },
+    }
+  );
+
+  const { error } = await supabaseAdmin
+    .from('subscriptions')
+    .insert({ email });
+
+  if (error) {
+    if (error.code === '23505') { // Unique constraint violation
+      return {
+        message: 'This email is already subscribed.',
+        status: 'error'
+      };
+    }
+    console.error('Subscription error:', error);
+    return {
+      message: 'An unexpected error occurred. Please try again.',
+      status: 'error'
+    };
+  }
+
+  // Send welcome email, but don't wait for it to complete
+  sendWelcomeEmail(email);
+
+  return {
+    message: 'Thank you for subscribing!',
+    status: 'success'
+  };
 }

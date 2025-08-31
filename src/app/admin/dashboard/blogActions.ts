@@ -1,14 +1,37 @@
 
 'use server';
 
-import { createSupabaseAdmin } from '@/lib/supabase';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
 import nodemailer from 'nodemailer';
 
+// This function creates a Supabase client for server-side operations
+function createSupabaseAdminClient() {
+  const cookieStore = cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        },
+      },
+    }
+  );
+}
+
 // Helper function to handle Supabase file upload
 async function uploadFile(file: File, bucket: string) {
-  const supabaseAdmin = createSupabaseAdmin();
+  const supabaseAdmin = createSupabaseAdminClient();
   const fileExtension = file.name.split('.').pop();
   const fileName = `${uuidv4()}.${fileExtension}`;
 
@@ -43,7 +66,7 @@ async function sendNewPostNotification(post: { id: string; title: string; }) {
       return;
   }
 
-  const supabaseAdmin = createSupabaseAdmin();
+  const supabaseAdmin = createSupabaseAdminClient();
   const { data: subscribers, error } = await supabaseAdmin.from('subscriptions').select('email');
 
   if (error || !subscribers || subscribers.length === 0) {
@@ -107,7 +130,7 @@ export async function addPost(prevState: any, formData: FormData) {
     return { message: uploadError };
   }
 
-  const supabaseAdmin = createSupabaseAdmin();
+  const supabaseAdmin = createSupabaseAdminClient();
   const { data: postData, error: dbError } = await supabaseAdmin
     .from('posts')
     .insert([{ 
@@ -140,7 +163,7 @@ export async function addPost(prevState: any, formData: FormData) {
 
 // Action to delete a blog post
 export async function deletePost(id: string, imageUrl: string) {
-    const supabaseAdmin = createSupabaseAdmin();
+    const supabaseAdmin = createSupabaseAdminClient();
     
     const fileName = imageUrl.split('/').pop();
     if (!fileName) {
@@ -178,7 +201,7 @@ export async function updatePost(id: string, postData: { title: string; content:
         return { error: 'All fields are required.' };
     }
     
-    const supabaseAdmin = createSupabaseAdmin();
+    const supabaseAdmin = createSupabaseAdminClient();
 
     const { error } = await supabaseAdmin
         .from('posts')

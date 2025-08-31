@@ -1,9 +1,33 @@
 
 'use server';
 
-import { createSupabaseAdmin } from '@/lib/supabase';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
+
+// This function creates a Supabase client for server-side operations
+function createSupabaseAdminClient() {
+  const cookieStore = cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        },
+      },
+    }
+  );
+}
+
 
 export async function addGalleryItem(prevState: any, formData: FormData) {
   const title = formData.get('title') as string;
@@ -17,7 +41,7 @@ export async function addGalleryItem(prevState: any, formData: FormData) {
     return { message: 'Title and hint are required.' };
   }
 
-  const supabaseAdmin = createSupabaseAdmin();
+  const supabaseAdmin = createSupabaseAdminClient();
   const fileExtension = imageFile.name.split('.').pop();
   const fileName = `${uuidv4()}.${fileExtension}`;
 
@@ -58,7 +82,7 @@ export async function addGalleryItem(prevState: any, formData: FormData) {
 }
 
 export async function deleteGalleryItem(id: string, imageUrl: string) {
-    const supabaseAdmin = createSupabaseAdmin();
+    const supabaseAdmin = createSupabaseAdminClient();
     
     // Extract file name from URL
     const fileName = imageUrl.split('/').pop();
@@ -99,7 +123,7 @@ export async function updateGalleryItem(id: string, title: string, hint: string)
         return { error: 'Title and hint cannot be empty.' };
     }
     
-    const supabaseAdmin = createSupabaseAdmin();
+    const supabaseAdmin = createSupabaseAdminClient();
 
     const { error } = await supabaseAdmin
         .from('gallery')

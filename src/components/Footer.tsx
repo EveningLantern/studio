@@ -7,56 +7,11 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { CONTACT_DETAILS, NAV_LINKS, SOCIAL_LINKS } from '@/lib/constants';
 import { Separator } from './ui/separator';
-import { MapPin, Phone, Mail, Send, Loader2 } from 'lucide-react';
+import { MapPin, Phone, Mail, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRef, useActionState } from 'react';
 import { useEffect } from 'react';
-import { z } from 'zod';
-import { createSupabaseAdmin } from '@/lib/supabase';
-import { sendWelcomeEmail } from '@/app/actions/emailActions';
-
-
-const emailSchema = z.string().email({ message: "Please enter a valid email address." });
-
-async function subscribeToNewsletter(prevState: any, formData: FormData) {
-  const email = formData.get('email') as string;
-
-  const validation = emailSchema.safeParse(email);
-
-  if (!validation.success) {
-    return {
-      message: validation.error.errors[0].message,
-      status: 'error'
-    };
-  }
-
-  const supabaseAdmin = createSupabaseAdmin();
-  const { error } = await supabaseAdmin
-    .from('subscriptions')
-    .insert({ email });
-
-  if (error) {
-    if (error.code === '23505') { // Unique constraint violation
-      return {
-        message: 'This email is already subscribed.',
-        status: 'error'
-      };
-    }
-    console.error('Subscription error:', error);
-    return {
-      message: 'An unexpected error occurred. Please try again.',
-      status: 'error'
-    };
-  }
-
-  // Send welcome email, but don't wait for it to complete
-  sendWelcomeEmail(email);
-
-  return {
-    message: 'Thank you for subscribing!',
-    status: 'success'
-  };
-}
+import { subscribeToNewsletter } from '@/app/actions/emailActions';
 
 
 export function Footer() {
