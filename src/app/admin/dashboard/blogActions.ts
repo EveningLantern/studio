@@ -256,7 +256,7 @@ export async function addUpdate(prevState: any, formData: FormData) {
   revalidatePath('/admin/dashboard');
   revalidatePath('/blog');
 
-  return { message: '✅ Success! Company update has been created.' };
+  return { message: '✅ Success! Company update has been created. You can now notify subscribers.' };
 }
 
 // ✅ Delete update
@@ -297,4 +297,80 @@ export async function updateUpdate(id: string, updateData: { title: string; cont
   revalidatePath('/blog');
 
   return { error: null };
+}
+
+// ✅ Send new company update email notifications
+export async function notifySubscribersOfUpdate(updateId: string, updateTitle: string) {
+  const { EMAIL_USER, EMAIL_PASS, NEXT_PUBLIC_BASE_URL } = process.env;
+
+  if (!EMAIL_USER || !EMAIL_PASS) {
+    console.error('❌ Missing EMAIL_USER or EMAIL_PASS in env.');
+    return { success: false, message: 'Server email configuration is incomplete.' };
+  }
+  if (!NEXT_PUBLIC_BASE_URL) {
+    console.error('❌ Missing NEXT_PUBLIC_BASE_URL in env.');
+    return { success: false, message: 'Base URL is not configured.' };
+  }
+
+  const supabaseAdmin = createSupabaseAdminClient();
+  const { data: subscribers, error } = await supabaseAdmin
+    .from('subscriptions')
+    .select('email');
+
+  if (error) {
+    console.error('❌ Failed to fetch subscribers:', error);
+    return { success: false, message: 'Could not fetch subscribers.' };
+  }
+  if (!subscribers || subscribers.length === 0) {
+    console.warn('⚠️ No subscribers found. No emails will be sent.');
+    return { success: true, message: 'No subscribers to notify.' };
+  }
+
+  console.log(`📢 Sending update notification to ${subscribers.length} subscribers...`);
+
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASS,
+    },
+  });
+
+  // Since updates don't have their own page, link to the blog page
+  const blogUrl = `${NEXT_PUBLIC_BASE_URL}/blog`;
+  let sentCount = 0;
+  let failedCount = 0;
+
+  for (const subscriber of subscribers) {
+    try {
+      await transporter.sendMail({
+        from: `"Digital Indian" <${EMAIL_USER}>`,
+        to: subscriber.email,
+        subject: `Company Update: ${updateTitle}`,
+        html: `
+          <h1>A New Update from Digital Indian</h1>
+          <p>We've just posted a new company update: "<strong>${updateTitle}</strong>".</p>
+          <p>You can view this and all other news on our blog page.</p>
+          <a href="${blogUrl}" 
+             style="display:inline-block;padding:10px 20px;color:white;
+                    background-color:#008080;text-decoration:none;
+                    border-radius:5px;">
+            View Updates
+          </a>
+          <br>
+          <p>Best,<br>The Digital Indian Team</p>
+        `,
+      });
+      sentCount++;
+      console.log(`✅ Update email sent to ${subscriber.email}`);
+    } catch (err) {
+      failedCount++;
+      console.error(`❌ Failed to send update email to ${subscriber.email}:`, err);
+    }
+  }
+
+  console.log(`🎉 Finished sending update notifications. Sent: ${sentCount}, Failed: ${failedCount}`);
+  return { success: true, message: `Notifications sent to ${sentCount} subscribers. ${failedCount > 0 ? `${failedCount} failed.` : ''}` };
 }

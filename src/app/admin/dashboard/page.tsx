@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { addGalleryItem, deleteGalleryItem, updateGalleryItem } from './actions';
-import { addPost, deletePost, updatePost, notifySubscribers, addUpdate, deleteUpdate, updateUpdate } from './blogActions';
+import { addPost, deletePost, updatePost, notifySubscribers, addUpdate, deleteUpdate, updateUpdate, notifySubscribersOfUpdate } from './blogActions';
 
 import {
   AlertDialog,
@@ -80,6 +80,7 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const supabase = createSupabaseBrowserClient();
   const [isNotifyPending, startNotifyTransition] = useTransition();
+  const [isNotifyUpdatePending, startNotifyUpdateTransition] = useTransition();
 
   
   // Gallery State
@@ -317,6 +318,18 @@ export default function AdminDashboardPage() {
     setIsUpdatingUpdate(false);
     setUpdateToEdit(null);
   };
+  
+  const handleNotifySubscribersOfUpdate = (updateId: string, updateTitle: string) => {
+    startNotifyUpdateTransition(async () => {
+        toast({ title: 'Sending Update Notifications...', description: 'This may take a moment.'});
+        const result = await notifySubscribersOfUpdate(updateId, updateTitle);
+        if (result.success) {
+            toast({ title: 'Notifications Sent!', description: result.message });
+        } else {
+            toast({ variant: 'destructive', title: 'Notification Failed', description: result.message });
+        }
+    });
+  };
 
 
   if (loading) {
@@ -460,6 +473,10 @@ export default function AdminDashboardPage() {
                                   <p className="text-sm text-muted-foreground line-clamp-1">{update.content}</p>
                                 </div>
                               <div className="flex gap-2">
+                                <Button size="sm" variant="outline" onClick={() => handleNotifySubscribersOfUpdate(update.id, update.title)} disabled={isNotifyUpdatePending}>
+                                    {isNotifyUpdatePending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                    Notify
+                                </Button>
                                 <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => handleEditUpdateClick(update)}><Edit className="h-4 w-4"/></Button>
                                 <Button size="icon" variant="destructive" className="h-9 w-9" onClick={() => handleDeleteUpdateClick(update)}><Trash2 className="h-4 w-4" /></Button>
                               </div>
