@@ -196,12 +196,12 @@ export const METRICS = [
 ];
 
 export const PARTNERS = [
-  { name: 'Partner 1', logo: '/assets/carousel/partner1.png' },
-  { name: 'Partner 2', logo: '/assets/carousel/partner2.png' },
-  { name: 'Partner 3', logo: '/assets/carousel/partner3.png' },
-  { name: 'Partner 4', logo: '/assets/carousel/partner4.png' },
-  { name: 'Partner 5', logo: '/assets/carousel/partner5.png' },
-  { name: 'Partner 6', logo: '/assets/carousel/partner6.png' },
+    { name: 'Partner 1', logo: '/assets/carousel/partner1.png' },
+    { name: 'Partner 2', logo: '/assets/carousel/partner2.png' },
+    { name: 'Partner 3', logo: '/assets/carousel/partner3.png' },
+    { name: 'Partner 4', logo: '/assets/carousel/partner4.png' },
+    { name: 'Partner 5', logo: '/assets/carousel/partner5.png' },
+    { name: 'Partner 6', logo: '/assets/carousel/partner6.png' },
 ];
 
 export const TESTIMONIALS = [

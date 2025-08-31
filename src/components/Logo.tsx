@@ -2,12 +2,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import logo from '../app/logo.png';
 
 export function Logo({ scrolled }: { scrolled?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-2" aria-label="Digital Indian Homepage">
       <Image
-        src="/logo.png"
+        src={logo}
         alt="Digital Indian Logo"
         width={32}
         height={32}
