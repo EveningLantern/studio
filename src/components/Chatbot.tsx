@@ -7,8 +7,7 @@ import { Input } from './ui/input';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from './ui/scroll-area';
-import { chat } from '@/ai/flows/chatFlow';
-
+import axios from 'axios';
 
 // Message interface
 interface Message {
@@ -97,8 +96,8 @@ const Chatbot: React.FC = () => {
     setStatus('submitting');
 
     try {
-      const response = await chat(messageToSend);
-      const botResponse: Message = { text: response, sender: 'bot' };
+      const response = await axios.post('/api/chat', { message: messageToSend });
+      const botResponse: Message = { text: response.data.reply, sender: 'bot' };
       setMessages(prev => [...prev, botResponse]);
 
     } catch (error) {
