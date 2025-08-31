@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -12,16 +11,16 @@ import Autoplay from 'embla-carousel-autoplay';
 import { PARTNERS } from '@/lib/constants';
 
 export function PartnerCarousel() {
-  const plugin = React.useRef(
-    Autoplay({ delay: 200, stopOnInteraction: true })
-  );
-
   return (
     <Carousel
-      plugins={[plugin.current]}
+      plugins={[
+        Autoplay({
+          delay: 2000,
+          stopOnInteraction: false,
+          stopOnMouseEnter: true,
+        }),
+      ]}
       className="w-full max-w-4xl"
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={plugin.current.reset}
       opts={{
         align: 'start',
         loop: true,
