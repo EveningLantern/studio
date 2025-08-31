@@ -86,13 +86,10 @@ async function sendNewPostNotification(post: { id: string; title: string; }) {
 
   const postUrl = `${NEXT_PUBLIC_BASE_URL}/blog/${post.id}`;
   
-  const emails = subscribers.map(s => s.email);
-
-  if (emails.length > 0) {
+  const emailPromises = subscribers.map(subscriber => {
     const mailOptions = {
         from: `"Digital Indian" <${EMAIL_USER}>`,
-        to: EMAIL_USER, // Required field
-        bcc: emails,
+        to: subscriber.email,
         subject: `New Blog Post: ${post.title}`,
         html: `
             <h1>New Post on Digital Indian Blog</h1>
@@ -105,12 +102,19 @@ async function sendNewPostNotification(post: { id: string; title: string; }) {
             <p>Best regards,<br>The Digital Indian Team</p>
         `,
     };
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log(`New post notification sent to ${emails.length} subscribers.`);
-    } catch (e) {
-        console.error('Failed to send new post notification emails:', e);
-    }
+    return transporter.sendMail(mailOptions).catch(err => {
+      console.error(`Failed to send email to ${subscriber.email}:`, err);
+      // Return null or a specific error object if you want to track failures
+      return null;
+    });
+  });
+
+  try {
+    const results = await Promise.all(emailPromises);
+    const successfulSends = results.filter(result => result !== null).length;
+    console.log(`New post notifications sent to ${successfulSends} out of ${subscribers.length} subscribers.`);
+  } catch (e) {
+    console.error('An error occurred while sending notification emails:', e);
   }
 }
 
