@@ -110,7 +110,7 @@ export default function Home() {
              </div>
              <div className="rounded-lg p-8 glassmorphism transition-all duration-300 hover:shadow-glow">
                 <h3 className="mb-8 text-center font-headline text-2xl font-semibold text-muted-foreground">
-                    Our Partners
+                    Our Partners and Affiliations
                 </h3>
                 <PartnerCarousel />
              </div>
