@@ -86,7 +86,7 @@ async function sendNewPostNotification(post: { id: string; title: string; }) {
 
   const postUrl = `${NEXT_PUBLIC_BASE_URL}/blog/${post.id}`;
   
-  const emailPromises = subscribers.map(subscriber => {
+  for (const subscriber of subscribers) {
     const mailOptions = {
         from: `"Digital Indian" <${EMAIL_USER}>`,
         to: subscriber.email,
@@ -102,20 +102,14 @@ async function sendNewPostNotification(post: { id: string; title: string; }) {
             <p>Best regards,<br>The Digital Indian Team</p>
         `,
     };
-    return transporter.sendMail(mailOptions).catch(err => {
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Notification email sent to ${subscriber.email}`);
+    } catch (err) {
       console.error(`Failed to send email to ${subscriber.email}:`, err);
-      // Return null or a specific error object if you want to track failures
-      return null;
-    });
-  });
-
-  try {
-    const results = await Promise.all(emailPromises);
-    const successfulSends = results.filter(result => result !== null).length;
-    console.log(`New post notifications sent to ${successfulSends} out of ${subscribers.length} subscribers.`);
-  } catch (e) {
-    console.error('An error occurred while sending notification emails:', e);
+    }
   }
+  console.log(`Finished sending new post notifications.`);
 }
 
 // Action to add a new blog post
@@ -153,9 +147,11 @@ export async function addPost(prevState: any, formData: FormData) {
     return { message: 'Failed to save post to the database.' };
   }
   
-  // Send notifications but don't block response
   if (postData) {
-    sendNewPostNotification(postData);
+    // Fire-and-forget: run in the background without awaiting
+    (async () => {
+        await sendNewPostNotification(postData);
+    })();
   }
   
   const result = { message: 'Success! Post created.' };
