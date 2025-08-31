@@ -75,6 +75,7 @@ const Chatbot: React.FC = () => {
   ]);
   const [status, setStatus] = useState<'idle' | 'submitting'>('idle');
   const scrollAreaRef = useRef<React.ElementRef<typeof ScrollAreaPrimitive> | null>(null);
+  const chatWindowRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -106,6 +107,20 @@ const Chatbot: React.FC = () => {
       setStatus('idle');
     }
   }, [status]);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (chatWindowRef.current && !chatWindowRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const ChatbotButton: React.FC = () => (
     <Button
@@ -119,6 +134,7 @@ const Chatbot: React.FC = () => {
 
   const ChatWindow: React.FC = () => (
     <motion.div 
+      ref={chatWindowRef}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 50 }}
