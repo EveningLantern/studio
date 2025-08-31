@@ -10,13 +10,15 @@ const faqResponses: Record<string, string> = {
     "how can i book a meeting?": "You can book a meeting by using the 'View Calendar' option on our contact page.",
 };
 
-const chatInputSchema = z.string();
+const chatInputSchema = z.object({ 
+    userMessage: z.string() 
+});
 
 const chatOutputSchema = z.string();
 
 const chatPrompt = ai.definePrompt({
     name: 'chatPrompt',
-    input: { schema: z.object({ userMessage: z.string() }) },
+    input: { schema: chatInputSchema },
     output: { schema: chatOutputSchema },
     prompt: `You are a friendly and helpful AI assistant for a company called 'Digital Indian'. Your goal is to provide concise and professional responses. The user asked: "{{userMessage}}". Based on the user's question, provide a relevant and helpful answer about the company or its services. If the question is outside of your scope, politely say that you can only answer questions related to Digital Indian.`,
 });
@@ -28,8 +30,8 @@ const chatFlow = ai.defineFlow(
         inputSchema: chatInputSchema,
         outputSchema: chatOutputSchema,
     },
-    async (userMessage) => {
-        const lowerMessage = userMessage.toLowerCase().trim();
+    async (input) => {
+        const lowerMessage = input.userMessage.toLowerCase().trim();
 
         // Date query
         if (lowerMessage.includes("date") || lowerMessage.includes("today")) {
@@ -49,7 +51,7 @@ const chatFlow = ai.defineFlow(
         }
 
         // Fallback to Gemini
-        const { output } = await chatPrompt({ userMessage });
+        const { output } = await chatPrompt(input);
         return output || "I'm sorry, I couldn't process that. Could you please rephrase?";
     }
 );
@@ -59,5 +61,5 @@ export async function chat(message: string): Promise<string> {
     if (!message || typeof message !== 'string' || message.trim() === '') {
         return "I'm sorry, but I didn't receive a message. How can I help you?";
     }
-    return await chatFlow(message);
+    return await chatFlow({ userMessage: message });
 }
