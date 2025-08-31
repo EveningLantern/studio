@@ -7,7 +7,7 @@ export function Logo({ scrolled }: { scrolled?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-2" aria-label="Digital Indian Homepage">
       <Image
-        src="/assets/logo.png"
+        src="/logo.png"
         alt="Digital Indian Logo"
         width={32}
         height={32}
