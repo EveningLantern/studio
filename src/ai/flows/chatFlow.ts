@@ -56,5 +56,8 @@ const chatFlow = ai.defineFlow(
 
 
 export async function chat(message: string): Promise<string> {
+    if (!message || typeof message !== 'string' || message.trim() === '') {
+        return "I'm sorry, but I didn't receive a message. How can I help you?";
+    }
     return await chatFlow(message);
 }
