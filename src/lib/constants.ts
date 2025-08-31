@@ -19,6 +19,21 @@ import {
   User,
   LayoutDashboard,
 } from 'lucide-react';
+import partner1 from '../assets/carousel/partner1.jpg';
+import partner2 from '../assets/carousel/partner2.jpeg';
+import partner3 from '../assets/carousel/partner3.png';
+import partner4 from '../assets/carousel/partner4.jpeg';
+import partner5 from '../assets/carousel/partner5.jpeg';
+import partner6 from '../assets/carousel/partner6.png';
+import partner7 from '../assets/carousel/partner7.jpeg';
+import partner8 from '../assets/carousel/partner8.jpeg';
+import partner9 from '../assets/carousel/partner9.jpeg';
+import partner10 from '../assets/carousel/partner10.png';
+import partner11 from '../assets/carousel/partner11.jpeg';
+import partner12 from '../assets/carousel/partner12.jpeg';
+
+
+
 
 type NavLink = {
   href: string;
@@ -196,12 +211,18 @@ export const METRICS = [
 ];
 
 export const PARTNERS = [
-    { name: 'Partner 1', logo: '/assets/carousel/partner1.png' },
-    { name: 'Partner 2', logo: '/assets/carousel/partner2.png' },
-    { name: 'Partner 3', logo: '/assets/carousel/partner3.png' },
-    { name: 'Partner 4', logo: '/assets/carousel/partner4.png' },
-    { name: 'Partner 5', logo: '/assets/carousel/partner5.png' },
-    { name: 'Partner 6', logo: '/assets/carousel/partner6.png' },
+    { name: 'Partner 1', logo: partner1 },
+    { name: 'Partner 2', logo: partner2 },
+    { name: 'Partner 3', logo: partner3 },
+    { name: 'Partner 4', logo: partner4 },
+    { name: 'Partner 5', logo: partner5 },
+    { name: 'Partner 6', logo: partner6 },
+    { name: 'Partner 7', logo: partner7},
+    { name: 'Partner 8', logo: partner8 },
+    { name: 'Partner 9', logo: partner9 },
+    { name: 'Partner 10', logo: partner10 },
+    { name: 'Partner 11', logo: partner11 },
+    { name: 'Partner 12', logo: partner12 }
 ];
 
 export const TESTIMONIALS = [
