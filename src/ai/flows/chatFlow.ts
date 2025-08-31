@@ -10,11 +10,23 @@ const faqResponses: Record<string, string> = {
     "how can i book a meeting?": "You can book a meeting by using the 'View Calendar' option on our contact page.",
 };
 
+const chatInputSchema = z.string();
+
+const chatOutputSchema = z.string();
+
+const chatPrompt = ai.definePrompt({
+    name: 'chatPrompt',
+    input: { schema: z.object({ userMessage: z.string() }) },
+    output: { schema: chatOutputSchema },
+    prompt: `You are a friendly and helpful AI assistant for a company called 'Digital Indian'. Your goal is to provide concise and professional responses. The user asked: "{{userMessage}}". Based on the user's question, provide a relevant and helpful answer about the company or its services. If the question is outside of your scope, politely say that you can only answer questions related to Digital Indian.`,
+});
+
+
 const chatFlow = ai.defineFlow(
     {
         name: 'chatFlow',
-        inputSchema: z.string(),
-        outputSchema: z.string(),
+        inputSchema: chatInputSchema,
+        outputSchema: chatOutputSchema,
     },
     async (userMessage) => {
         const lowerMessage = userMessage.toLowerCase().trim();
@@ -37,12 +49,7 @@ const chatFlow = ai.defineFlow(
         }
 
         // Fallback to Gemini
-        const prompt = `You are a friendly and helpful AI assistant for a company called 'Digital Indian'. Your goal is to provide concise and professional responses. The user asked: "${userMessage}". Based on the user's question, provide a relevant and helpful answer about the company or its services. If the question is outside of your scope, politely say that you can only answer questions related to Digital Indian.`;
-        
-        const { output } = await ai.generate({
-            prompt: prompt,
-        });
-
+        const { output } = await chatPrompt({ userMessage });
         return output || "I'm sorry, I couldn't process that. Could you please rephrase?";
     }
 );
