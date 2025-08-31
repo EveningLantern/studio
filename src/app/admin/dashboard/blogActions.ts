@@ -55,16 +55,16 @@ async function uploadFile(file: File, bucket: string) {
 }
 
 // ✅ Send new post email notifications
-async function sendNewPostNotification(post: { id: string; title: string }) {
+export async function notifySubscribers(postId: string, postTitle: string) {
   const { EMAIL_USER, EMAIL_PASS, NEXT_PUBLIC_BASE_URL } = process.env;
 
   if (!EMAIL_USER || !EMAIL_PASS) {
     console.error('❌ Missing EMAIL_USER or EMAIL_PASS in env.');
-    return;
+    return { success: false, message: 'Server email configuration is incomplete.' };
   }
   if (!NEXT_PUBLIC_BASE_URL) {
     console.error('❌ Missing NEXT_PUBLIC_BASE_URL in env.');
-    return;
+    return { success: false, message: 'Base URL is not configured.' };
   }
 
   const supabaseAdmin = createSupabaseAdminClient();
@@ -74,11 +74,11 @@ async function sendNewPostNotification(post: { id: string; title: string }) {
 
   if (error) {
     console.error('❌ Failed to fetch subscribers:', error);
-    return;
+    return { success: false, message: 'Could not fetch subscribers.' };
   }
   if (!subscribers || subscribers.length === 0) {
     console.warn('⚠️ No subscribers found. No emails will be sent.');
-    return;
+    return { success: true, message: 'No subscribers to notify.' };
   }
 
   console.log(`📧 Sending notification to ${subscribers.length} subscribers...`);
@@ -93,17 +93,19 @@ async function sendNewPostNotification(post: { id: string; title: string }) {
     },
   });
 
-  const postUrl = `${NEXT_PUBLIC_BASE_URL}/blog/${post.id}`;
+  const postUrl = `${NEXT_PUBLIC_BASE_URL}/blog/${postId}`;
+  let sentCount = 0;
+  let failedCount = 0;
 
   for (const subscriber of subscribers) {
     try {
       await transporter.sendMail({
         from: `"Digital Indian" <${EMAIL_USER}>`,
         to: subscriber.email,
-        subject: `New Blog Post: ${post.title}`,
+        subject: `New Blog Post: ${postTitle}`,
         html: `
           <h1>New Post on Digital Indian Blog</h1>
-          <p>We've just published "<strong>${post.title}</strong>".</p>
+          <p>We've just published "<strong>${postTitle}</strong>".</p>
           <a href="${postUrl}" 
              style="display:inline-block;padding:10px 20px;color:white;
                     background-color:#f97316;text-decoration:none;
@@ -115,13 +117,16 @@ async function sendNewPostNotification(post: { id: string; title: string }) {
           <p>Best,<br>The Digital Indian Team</p>
         `,
       });
+      sentCount++;
       console.log(`✅ Email sent to ${subscriber.email}`);
     } catch (err) {
+      failedCount++;
       console.error(`❌ Failed to send email to ${subscriber.email}:`, err);
     }
   }
 
-  console.log(`🎉 Finished sending notifications.`);
+  console.log(`🎉 Finished sending notifications. Sent: ${sentCount}, Failed: ${failedCount}`);
+  return { success: true, message: `Notifications sent to ${sentCount} subscribers. ${failedCount > 0 ? `${failedCount} failed.` : ''}` };
 }
 
 // ✅ Add new post
@@ -153,15 +158,11 @@ export async function addPost(prevState: any, formData: FormData) {
     return { message: 'Failed to save post to DB.' };
   }
 
-  if (postData) {
-    // ✅ This is now a non-blocking call
-    sendNewPostNotification(postData);
-  }
-
   revalidatePath('/admin/dashboard');
   revalidatePath('/blog');
 
-  return { message: '✅ Success! Post created.' };
+  // IMPORTANT: We no longer send emails automatically. This is now a manual admin action.
+  return { message: '✅ Success! Post created. You can now notify subscribers.' };
 }
 
 // ✅ Delete post

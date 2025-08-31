@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useEffect, useState, useRef, useActionState } from 'react';
+import { useEffect, useState, useRef, useActionState, useTransition } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { LogOut, Image as ImageIcon, FileText, Trash2, Edit, Loader2 } from 'lucide-react';
+import { LogOut, Image as ImageIcon, FileText, Trash2, Edit, Loader2, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { addGalleryItem, deleteGalleryItem, updateGalleryItem } from './actions';
-import { addPost, deletePost, updatePost } from './blogActions';
+import { addPost, deletePost, updatePost, notifySubscribers } from './blogActions';
 
 import {
   AlertDialog,
@@ -71,6 +71,8 @@ export default function AdminDashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createSupabaseBrowserClient();
+  const [isNotifyPending, startNotifyTransition] = useTransition();
+
   
   // Gallery State
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
@@ -230,6 +232,18 @@ export default function AdminDashboardPage() {
     setPostToEdit(null);
   };
 
+  const handleNotifySubscribers = (postId: string, postTitle: string) => {
+    startNotifyTransition(async () => {
+        toast({ title: 'Sending Notifications...', description: 'This may take a moment.'});
+        const result = await notifySubscribers(postId, postTitle);
+        if (result.success) {
+            toast({ title: 'Notifications Sent!', description: result.message });
+        } else {
+            toast({ variant: 'destructive', title: 'Notification Failed', description: result.message });
+        }
+    });
+  };
+
   if (loading) {
     return (
         <div className="p-4 md:p-6 lg:p-8">
@@ -317,18 +331,25 @@ export default function AdminDashboardPage() {
                     <CardHeader><CardTitle>Existing Blog Posts</CardTitle></CardHeader>
                     <CardContent>
                       {loadingPosts ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-48 w-full" />)}</div>
+                        <div className="space-y-4">{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}</div>
                       ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="space-y-4">
                           {posts.map(post => (
-                            <div key={post.id} className="relative group">
-                              <Image src={post.image_url} alt={post.title} width={400} height={300} className="rounded-md object-cover w-full h-48" />
-                              <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleEditPostClick(post)}><Edit className="h-4 w-4"/></Button>
-                                <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => handleDeletePostClick(post)}><Trash2 className="h-4 w-4" /></Button>
+                            <div key={post.id} className="flex items-center justify-between p-3 rounded-md border bg-card/50">
+                              <div className="flex items-center gap-4">
+                                <Image src={post.image_url} alt={post.title} width={80} height={60} className="rounded-md object-cover w-20 h-16" />
+                                <div>
+                                  <p className="font-bold">{post.title}</p>
+                                  <p className="text-sm text-muted-foreground">{post.author} / {post.category}</p>
+                                </div>
                               </div>
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2 text-xs rounded-b-md">
-                                 <p className="font-bold truncate">{post.title}</p>
+                              <div className="flex gap-2">
+                                <Button size="sm" variant="outline" onClick={() => handleNotifySubscribers(post.id, post.title)} disabled={isNotifyPending}>
+                                  {isNotifyPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                  Notify
+                                </Button>
+                                <Button size="icon" variant="outline" className="h-9 w-9" onClick={() => handleEditPostClick(post)}><Edit className="h-4 w-4"/></Button>
+                                <Button size="icon" variant="destructive" className="h-9 w-9" onClick={() => handleDeletePostClick(post)}><Trash2 className="h-4 w-4" /></Button>
                               </div>
                             </div>
                           ))}
