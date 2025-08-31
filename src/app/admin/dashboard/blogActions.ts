@@ -1,40 +1,57 @@
+
 'use server';
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
 import nodemailer from 'nodemailer';
 
-// ✅ Create Supabase client with Service Role Key
-function createSupabaseAdminClient() {
+// This function creates a Supabase client for server-side operations that require user context (cookies)
+function createSupabaseServerClient() {
   const cookieStore = cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!, // must be server-only key
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
       cookies: {
-        async get(name: string) {
-          return (await cookieStore).get(name)?.value;
+        get(name: string) {
+          return cookieStore.get(name)?.value
         },
-        async set(name: string, value: string, options: CookieOptions) {
-          (await cookieStore).set({ name, value, ...options });
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
         },
-        async remove(name: string, options: CookieOptions) {
-          (await cookieStore).set({ name, value: '', ...options });
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
         },
       },
     }
   );
 }
 
+// This function creates a Supabase client with full admin privileges for server-side operations
+// that are not tied to a specific user's request, like fetching all subscribers.
+function createSupabaseAdminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  );
+}
+
 // ✅ File upload helper
 async function uploadFile(file: File, bucket: string) {
-  const supabaseAdmin = createSupabaseAdminClient();
+  const supabase = createSupabaseServerClient(); // Use server client for user-context actions
   const fileExtension = file.name.split('.').pop();
   const fileName = `${uuidv4()}.${fileExtension}`;
 
-  const { error: uploadError } = await supabaseAdmin.storage
+  const { error: uploadError } = await supabase.storage
     .from(bucket)
     .upload(fileName, file);
 
@@ -43,7 +60,7 @@ async function uploadFile(file: File, bucket: string) {
     return { data: null, error: `Failed to upload image to ${bucket}.` };
   }
 
-  const { data: urlData } = supabaseAdmin.storage
+  const { data: urlData } = supabase.storage
     .from(bucket)
     .getPublicUrl(fileName);
 
@@ -67,7 +84,7 @@ export async function notifySubscribers(postId: string, postTitle: string) {
     return { success: false, message: 'Base URL is not configured.' };
   }
 
-  const supabaseAdmin = createSupabaseAdminClient();
+  const supabaseAdmin = createSupabaseAdminClient(); // Use the direct admin client
   const { data: subscribers, error } = await supabaseAdmin
     .from('subscriptions')
     .select('email');
@@ -146,8 +163,8 @@ export async function addPost(prevState: any, formData: FormData) {
     return { message: uploadError };
   }
 
-  const supabaseAdmin = createSupabaseAdminClient();
-  const { data: postData, error: dbError } = await supabaseAdmin
+  const supabase = createSupabaseServerClient();
+  const { data: postData, error: dbError } = await supabase
     .from('posts')
     .insert([{ title, content, author, category, image_url: uploadResult.url }])
     .select()
@@ -167,15 +184,15 @@ export async function addPost(prevState: any, formData: FormData) {
 
 // ✅ Delete post
 export async function deletePost(id: string, imageUrl: string) {
-  const supabaseAdmin = createSupabaseAdminClient();
+  const supabase = createSupabaseServerClient();
 
   const fileName = imageUrl.split('/').pop();
   if (fileName) {
-    const { error: storageError } = await supabaseAdmin.storage.from('posts').remove([fileName]);
+    const { error: storageError } = await supabase.storage.from('posts').remove([fileName]);
     if (storageError) console.error('❌ Storage deletion error:', storageError);
   }
 
-  const { error: dbError } = await supabaseAdmin.from('posts').delete().match({ id });
+  const { error: dbError } = await supabase.from('posts').delete().match({ id });
   if (dbError) {
     console.error('❌ DB deletion error:', dbError);
     return { error: 'Failed to delete post from DB.' };
@@ -197,8 +214,8 @@ export async function updatePost(
     return { error: 'All fields required.' };
   }
 
-  const supabaseAdmin = createSupabaseAdminClient();
-  const { error } = await supabaseAdmin
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase
     .from('posts')
     .update({ title, content, author, category })
     .match({ id });
