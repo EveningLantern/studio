@@ -33,6 +33,7 @@ export default function Home() {
           data-ai-hint="technology collaboration"
           fill
           className="object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center p-4">
@@ -101,15 +102,15 @@ export default function Home() {
                 </p>
                 <div className="mt-8 grid grid-cols-1 gap-8 text-center sm:grid-cols-3">
                   {METRICS.map((metric) => (
-                    <div key={metric.label} className="rounded-lg p-8 glassmorphism transition-all duration-300 hover:shadow-glow">
-                      <p className="font-headline text-5xl font-extrabold text-primary">{metric.value}</p>
-                      <p className="mt-2 text-lg font-medium text-muted-foreground">{metric.label}</p>
+                    <div key={metric.label} className="rounded-lg p-6 glassmorphism transition-all duration-300 hover:shadow-glow">
+                      <p className="font-headline text-4xl sm:text-5xl font-extrabold text-primary">{metric.value}</p>
+                      <p className="mt-2 text-base sm:text-lg font-medium text-muted-foreground">{metric.label}</p>
                     </div>
                   ))}
                 </div>
              </div>
-             <div className="rounded-lg p-8 glassmorphism transition-all duration-300 hover:shadow-glow">
-                <h3 className="mb-8 text-center font-headline text-2xl font-semibold text-muted-foreground">
+             <div className="rounded-lg p-6 sm:p-8 glassmorphism transition-all duration-300 hover:shadow-glow">
+                <h3 className="mb-6 sm:mb-8 text-center font-headline text-xl sm:text-2xl font-semibold text-muted-foreground">
                     Our Partners and Affiliations
                 </h3>
                 <PartnerCarousel />
@@ -131,7 +132,7 @@ export default function Home() {
               align: 'start',
               loop: true,
             }}
-            className="w-full max-w-4xl mx-auto"
+            className="w-full max-w-xs sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto"
           >
             <CarouselContent>
               {TESTIMONIALS.map((testimonial, index) => (
@@ -139,7 +140,7 @@ export default function Home() {
                   <div className="p-1">
                     <Card className="h-full bg-transparent">
                       <CardContent className="flex h-full flex-col justify-center p-6 text-center">
-                        <p className="mb-4 text-lg italic text-muted-foreground">
+                        <p className="mb-4 text-base sm:text-lg italic text-muted-foreground">
                           "{testimonial.quote}"
                         </p>
                         <p className="font-headline font-semibold">{testimonial.name}</p>
@@ -150,8 +151,8 @@ export default function Home() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="hidden sm:inline-flex" />
+            <CarouselNext className="hidden sm:inline-flex" />
           </Carousel>
         </div>
       </section>
