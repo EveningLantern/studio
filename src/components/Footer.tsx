@@ -105,22 +105,45 @@ export function Footer() {
           </div>
 
           <div className="col-span-1 sm:col-span-2 md:col-span-1">
-            <h3 className="font-headline font-semibold">Contact Us</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2 justify-center sm:justify-start">
-                <MapPin className="mt-1 h-4 w-4 flex-shrink-0 text-primary" />
-                <span>{CONTACT_DETAILS.address}</span>
-              </li>
-              <li className="flex items-center gap-2 justify-center sm:justify-start">
-                <Phone className="h-4 w-4 flex-shrink-0 text-primary" />
-                <span>{CONTACT_DETAILS.phone}</span>
-              </li>
-              <li className="flex items-center gap-2 justify-center sm:justify-start">
-                <Mail className="h-4 w-4 flex-shrink-0 text-primary" />
-                <span>{CONTACT_DETAILS.email}</span>
-              </li>
-            </ul>
-          </div>
+  <h3 className="font-headline font-semibold">Contact Us</h3>
+  <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+    {/* Address */}
+    <li className="flex items-start gap-2 justify-center sm:justify-start">
+      <MapPin className="mt-1 h-4 w-4 flex-shrink-0 text-primary" />
+      <a
+        href="https://www.google.com/maps/place/EN+BLOCK,+EN+-+9,+EN+Block,+Sector+V,+Bidhannagar,+Kolkata,+West+Bengal+700091/@22.5736047,88.4314241,622m/data=!3m1!1e3!4m6!3m5!1s0x3a0275afb2dd949b:0xcaff4cf09f3240cf!8m2!3d22.5736058!4d88.43239!16s%2Fg%2F11rkm75qlp"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline"
+      >
+        {CONTACT_DETAILS.address}
+      </a>
+    </li>
+
+    {/* Phone */}
+    <li className="flex items-center gap-2 justify-center sm:justify-start">
+      <Phone className="h-4 w-4 flex-shrink-0 text-primary" />
+      <a
+        href={`tel:${CONTACT_DETAILS.phone}`}
+        className="hover:underline"
+      >
+        {CONTACT_DETAILS.phone}
+      </a>
+    </li>
+
+    {/* Email */}
+    <li className="flex items-center gap-2 justify-center sm:justify-start">
+      <Mail className="h-4 w-4 flex-shrink-0 text-primary" />
+      <a
+        href={`mailto:${CONTACT_DETAILS.email}`}
+        className="hover:underline"
+      >
+        {CONTACT_DETAILS.email}
+      </a>
+    </li>
+  </ul>
+</div>
+
         </div>
 
         <Separator className="my-8" />

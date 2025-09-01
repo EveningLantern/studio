@@ -9,8 +9,9 @@ import {
   Mail,
   MapPin,
   Facebook,
-  Twitter,
   Linkedin,
+  Youtube,
+  Instagram,
   Home,
   Briefcase,
   Info,
@@ -266,7 +267,7 @@ export const TEAM_MEMBERS = [
     name: 'Isha Gupta',
     role: 'Director of Skill Development',
     bio: 'Passionate about education and empowerment, Isha designs and oversees our impactful training programs.',
-    avatarUrl: 'https://picsum.photos/200/200?random=8',
+    avatarUrl: '',
   },
 ];
 
@@ -278,7 +279,8 @@ export const CONTACT_DETAILS = {
 };
 
 export const SOCIAL_LINKS = [
-    { name: 'Facebook', icon: Facebook, href: '#' },
-    { name: 'Twitter', icon: Twitter, href: '#' },
-    { name: 'LinkedIn', icon: Linkedin, href: '#' },
+    { name: 'Facebook', icon: Facebook, href: 'https://www.facebook.com/digitalindian.org/' },
+    { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/company/digitalindian/?originalSubdomain=in' },
+    { name: 'Youtube', icon: Youtube, href: 'https://www.youtube.com/channel/UCwLQPtIouPQA_pfWsxAr1Aw' },
+    { name: 'Instagram', icon: Instagram, href: 'https://www.instagram.com/digital_indian16' },
 ];
