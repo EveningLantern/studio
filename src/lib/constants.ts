@@ -122,7 +122,7 @@ export const SERVICES: Service[] = [
   {
     slug: 'geospatial-gis',
     title: 'Geospatial & GIS',
-    description: 'Leveraging spatial data to provide powerful insights for planning and decision-making.',
+    description: 'Advanced utility mapping, remote sensing, and spatial data analytics for informed decision-making.',
     icon: Globe,
     details: {
       heroImage: 'https://picsum.photos/1200/400?random=2',
@@ -150,7 +150,7 @@ export const SERVICES: Service[] = [
   {
     slug: 'skill-development',
     title: 'Skill Development',
-    description: 'Empowering the workforce with industry-relevant skills for the digital economy.',
+    description: 'Industry-focused training programs in telecom and GIS with government and corporate partnerships.',
     icon: GraduationCap,
     details: {
       heroImage: 'https://picsum.photos/1200/400?random=3',
@@ -178,7 +178,7 @@ export const SERVICES: Service[] = [
   {
     slug: 'business-consultancy',
     title: 'Business Consultancy',
-    description: 'Providing strategic guidance to help businesses navigate the complexities of the market.',
+    description: 'Comprehensive startup support including handholding, seed funding, and business compliance services.',
     icon: Users,
     details: {
       heroImage: 'https://picsum.photos/1200/400?random=4',
@@ -246,26 +246,26 @@ export const TESTIMONIALS = [
 
 export const TEAM_MEMBERS = [
   {
-    name: 'Aarav Patel',
+    name: 'Santanu Das',
     role: 'Founder & CEO',
     bio: 'A visionary leader with over 20 years of experience in the technology sector, driving innovation and strategic growth.',
     avatarUrl: 'https://picsum.photos/200/200?random=5',
   },
   {
-    name: 'Diya Mehta',
-    role: 'Chief Technology Officer',
+    name: 'Tapas Chakroborty',
+    role: 'CFO',
     bio: 'An expert in network architecture and geospatial technologies, Diya leads our technical teams to deliver excellence.',
     avatarUrl: 'https://picsum.photos/200/200?random=6',
   },
   {
-    name: 'Rohan Joshi',
-    role: 'Head of Business Development',
+    name: 'Sandy Dias',
+    role: 'HR',
     bio: 'Rohan is dedicated to building strong client relationships and identifying new opportunities for strategic partnerships.',
     avatarUrl: 'https://picsum.photos/200/200?random=7',
   },
    {
-    name: 'Isha Gupta',
-    role: 'Director of Skill Development',
+    name: 'MK Sukumar',
+    role: 'Technical Head',
     bio: 'Passionate about education and empowerment, Isha designs and oversees our impactful training programs.',
     avatarUrl: '',
   },
