@@ -268,7 +268,7 @@ export const TEAM_MEMBERS = [
     role: 'Technical Head',
     bio: 'Passionate about education and empowerment, Isha designs and oversees our impactful training programs.',
     avatarUrl: '',
-  },
+  }, 
 ];
 
 
