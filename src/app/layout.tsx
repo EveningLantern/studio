@@ -1,6 +1,6 @@
+
 'use client';
 
-import type { Metadata } from 'next';
 import { Poppins, Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -19,19 +19,13 @@ const fontPoppins = Poppins({
   variable: '--font-headline',
 });
 
+
+
 const fontInter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-body',
 });
-
-// export const metadata: Metadata = {
-//   title: 'Digital Indian: Empowering Tech Solutions',
-//   description: 'An elegant, modern, and trustworthy website for the technology solutions provider Digital Indian.',
-//   icons: {
-//     icon: '/favicon.ico',
-//   },
-// };
 
 export default function RootLayout({
   children,
@@ -65,6 +59,11 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>Digital Indian</title>
+        <meta name="description" content="An elegant, modern, and trustworthy website for the technology solutions provider Digital Indian." />
+        <link rel="icon" href="/logo.png" />
+      </head>
       <body
         className={cn(
           'min-h-screen bg-background font-body antialiased',
