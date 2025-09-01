@@ -246,8 +246,8 @@ export const TESTIMONIALS = [
 
 export const TEAM_MEMBERS = [
   {
-    name: 'Santanu Das',
-    role: 'Founder & CEO',
+    name: 'Santanu Kumar',
+    role: 'CEO',
     bio: 'A visionary leader with over 20 years of experience in the technology sector, driving innovation and strategic growth.',
     avatarUrl: '',
   },
