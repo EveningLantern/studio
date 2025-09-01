@@ -62,7 +62,7 @@ export default function RootLayout({
       <head>
         <title>Digital Indian</title>
         <meta name="description" content="An elegant, modern, and trustworthy website for the technology solutions provider Digital Indian." />
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" href="..//logo.ico" type="image/x-icon" />
       </head>
       <body
         className={cn(
@@ -72,7 +72,7 @@ export default function RootLayout({
         )}
       >
         <AuthProvider>
-          <div className="relative flex min-h-dvh flex-col">
+          <div className="relative flex min-h-dvh flex-col pt-[40px]">
             <div className={cn(
                 "fixed top-0 left-0 z-50 transition-all duration-300",
                 scrolled ? "p-4" : "p-4 md:p-6 lg:p-8"
@@ -89,7 +89,7 @@ export default function RootLayout({
                     animationClass
                   )}
                 >
-                  <div className={cn("cut-corner h-full w-full transition-all duration-300", !scrolled && "pt-12 md:pt-10")}>
+                  <div className={cn("cut-corner h-full w-full transition-all duration-300", !scrolled && "pt-0")}>
                     <ScrollArea className="h-full w-full rounded-2xl">
                       {children}
                     </ScrollArea>
