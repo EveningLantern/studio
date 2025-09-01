@@ -65,7 +65,11 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(170deg, hsl(0, 0%, 100%) 0%, hsl(0, 0%, 95%) 50%, hsl(0, 0%, 90%) 100%);
+    background-image: url('../../public/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center center;
   }
 }
 

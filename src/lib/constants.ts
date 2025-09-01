@@ -32,7 +32,7 @@ import partner9 from '../assets/carousel/partner9.jpeg';
 import partner10 from '../assets/carousel/partner10.png';
 import partner11 from '../assets/carousel/partner11.jpeg';
 import partner12 from '../assets/carousel/partner12.jpeg';
-import service1 from '../assets/service 1.jpg'
+import service1 from '../assets/service1.jpg'
 import service2 from '../assets/service 2.jpg'
 import service3 from '../assets/service 3.jpg'
 import service4 from '../assets/service 4.jpg'
@@ -105,7 +105,7 @@ export const SERVICES: Service[] = [
     description: 'Designing, deploying, and maintaining robust and scalable telecom networks.',
     icon: TowerControl,
     details: {
-      heroImage: 'https://picsum.photos/1200/400?random=1',
+      heroImage: service1,
       heroTitle: 'Advanced Telecom Infrastructure',
       heroSubtitle: 'Building the backbone of modern communication with cutting-edge technology and expertise.',
       sections: [
@@ -133,7 +133,7 @@ export const SERVICES: Service[] = [
     description: 'Advanced utility mapping, remote sensing, and spatial data analytics for informed decision-making.',
     icon: Globe,
     details: {
-      heroImage: 'https://picsum.photos/1200/400?random=2',
+      heroImage: service2,
       heroTitle: 'Intelligent Geospatial & GIS Solutions',
       heroSubtitle: 'Transforming complex location data into actionable intelligence for strategic advantage.',
       sections: [
@@ -161,7 +161,7 @@ export const SERVICES: Service[] = [
     description: 'Industry-focused training programs in telecom and GIS with government and corporate partnerships.',
     icon: GraduationCap,
     details: {
-      heroImage: 'https://picsum.photos/1200/400?random=3',
+      heroImage: service3,
       heroTitle: 'Future-Ready Skill Development',
       heroSubtitle: 'Bridging the talent gap with targeted training programs and certifications.',
       sections: [
@@ -189,7 +189,7 @@ export const SERVICES: Service[] = [
     description: 'Comprehensive startup support including handholding, seed funding, and business compliance services.',
     icon: Users,
     details: {
-      heroImage: '../',
+      heroImage: service4,
       heroTitle: 'Strategic Business Consultancy',
       heroSubtitle: 'Driving transformation and growth with expert advice and innovative strategies.',
       sections: [

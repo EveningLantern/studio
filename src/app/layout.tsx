@@ -66,13 +66,13 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          'min-h-screen bg-background font-body antialiased',
+          'min-h-screen font-body antialiased',
           fontPoppins.variable,
           fontInter.variable
         )}
       >
         <AuthProvider>
-          <div className="relative flex min-h-dvh flex-col bg-background">
+          <div className="relative flex min-h-dvh flex-col">
             <div className={cn(
                 "fixed top-0 left-0 z-50 transition-all duration-300",
                 scrolled ? "p-4" : "p-4 md:p-6 lg:p-8"
