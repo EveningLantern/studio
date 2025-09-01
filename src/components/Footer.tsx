@@ -58,7 +58,7 @@ export function Footer() {
               <h2 className="font-headline text-3xl font-bold">Stay Ahead of the Curve</h2>
               <p className="mt-2 max-w-2xl">Subscribe to our newsletter for the latest in tech solutions and industry insights.</p>
             </div>
-            <form ref={formRef} action={formAction} className="flex w-full max-w-sm items-center space-x-2">
+            <form ref={formRef} action={formAction} className="flex w-full max-w-sm flex-col gap-2 md:flex-row md:items-center md:space-x-2 md:space-y-0">
               <Input
                 type="email"
                 name="email"
