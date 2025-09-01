@@ -249,26 +249,26 @@ export const TEAM_MEMBERS = [
     name: 'Santanu Das',
     role: 'Founder & CEO',
     bio: 'A visionary leader with over 20 years of experience in the technology sector, driving innovation and strategic growth.',
-    avatarUrl: 'https://picsum.photos/200/200?random=5',
+    avatarUrl: '',
   },
   {
     name: 'Tapas Chakroborty',
     role: 'CFO',
     bio: 'An expert in network architecture and geospatial technologies, Diya leads our technical teams to deliver excellence.',
-    avatarUrl: 'https://picsum.photos/200/200?random=6',
+    avatarUrl: '',
   },
   {
     name: 'Sandy Dias',
     role: 'HR',
     bio: 'Rohan is dedicated to building strong client relationships and identifying new opportunities for strategic partnerships.',
-    avatarUrl: 'https://picsum.photos/200/200?random=7',
+    avatarUrl: '',
   },
    {
-    name: 'MK Sukumar',
+    name: 'M.K Sukumar',
     role: 'Technical Head',
     bio: 'Passionate about education and empowerment, Isha designs and oversees our impactful training programs.',
-    avatarUrl: '',
-  }, 
+    avatarUrl: 'https://picsum.photos/200/200?random=8',
+  },
 ];
 
 
