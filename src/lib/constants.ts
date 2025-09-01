@@ -32,6 +32,14 @@ import partner9 from '../assets/carousel/partner9.jpeg';
 import partner10 from '../assets/carousel/partner10.png';
 import partner11 from '../assets/carousel/partner11.jpeg';
 import partner12 from '../assets/carousel/partner12.jpeg';
+import service1 from '../assets/service 1.jpg'
+import service2 from '../assets/service 2.jpg'
+import service3 from '../assets/service 3.jpg'
+import service4 from '../assets/service 4.jpg'
+import homet1 from '../assets/homet1.jpg'
+import homet2 from '../assets/homet2.jpg'
+import homet3 from '../assets/homet3.jpg'
+import homet4 from '../assets/homet4.jpg'
 
 
 
@@ -181,7 +189,7 @@ export const SERVICES: Service[] = [
     description: 'Comprehensive startup support including handholding, seed funding, and business compliance services.',
     icon: Users,
     details: {
-      heroImage: 'https://picsum.photos/1200/400?random=4',
+      heroImage: '../',
       heroTitle: 'Strategic Business Consultancy',
       heroSubtitle: 'Driving transformation and growth with expert advice and innovative strategies.',
       sections: [
