@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import logo from '../app/logo.png';
+import logo from '../assets/logo.png'
 
 export function Logo({ scrolled }: { scrolled?: boolean }) {
   return (
@@ -12,7 +12,7 @@ export function Logo({ scrolled }: { scrolled?: boolean }) {
         alt="Digital Indian Logo"
         width={48}
         height={48}
-        className="h-10 w-10 transition-transform duration-300 ease-in-out"
+        className="h-12 w-12 transition-transform duration-300 ease-in-out"
         priority
       />
       <div
@@ -21,7 +21,7 @@ export function Logo({ scrolled }: { scrolled?: boolean }) {
           scrolled ? 'max-w-0 opacity-0 -translate-x-4' : 'max-w-xs opacity-100 translate-x-0'
         )}
       >
-        <span className="font-headline text-2xl font-bold whitespace-nowrap">
+        <span className="font-headline text-3xl font-bold whitespace-nowrap">
           <span className="text-primary">Digital</span>
           <span className="text-green-500">Indian</span>
         </span>

@@ -74,8 +74,8 @@ export default function RootLayout({
         <AuthProvider>
           <div className="relative flex min-h-dvh flex-col pt-[40px]">
             <div className={cn(
-                "fixed top-0 left-0 z-50 transition-all duration-300",
-                scrolled ? "p-4" : "p-4 md:p-6 lg:p-8"
+                "fixed top-[-20px] left-[-3px] z-50 transition-all duration-300",
+                scrolled ? "p-8" : "p-6 md:p-6 lg:p-8"
               )}>
                 <Logo scrolled={scrolled} />
               </div>
