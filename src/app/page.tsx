@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card2";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -22,7 +22,7 @@ import { ArrowRight } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { PartnerCarousel } from "@/components/PartnerCarousel";
 
-// ✅ Keep your hero images imports
+// ✅ Hero images
 import hero1 from "../assets/homet1.jpg";
 import hero2 from "../assets/homet2.jpg";
 import hero3 from "../assets/homet3.jpg";
@@ -40,50 +40,47 @@ const images = [hero1, hero2, hero3, hero4];
 export default function Home() {
   const [index, setIndex] = useState(0);
 
-  // Rotate background every 5 seconds
   useEffect(() => {
-  // ⏱️ Rotate background every 5 seconds
-  const interval = setInterval(() => {
-    setIndex((prev) => (prev + 1) % images.length);
-  }, 5000);
+    // ⏱️ Rotate background every 5 seconds
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length);
+    }, 5000);
 
-  // 📜 Load particles.js
-  const script = document.createElement("script");
-  script.src = "/particles.js";
-  script.async = true;
-  script.onload = () => {
-    if (window.particlesJS) {
-      window.particlesJS.load("particles-js", "/particles.json", () => {
-        console.log("particles.js config loaded");
-      });
-    }
-  };
-  document.body.appendChild(script);
-
-  // 🧹 Cleanup
-  return () => {
-    clearInterval(interval);
-    if (document.body.contains(script)) {
-      document.body.removeChild(script);
-    }
-
-    // Destroy particles safely
-    setTimeout(() => {
-      if (
-        window.pJSDom &&
-        window.pJSDom.length > 0 &&
-        window.pJSDom[0].fn &&
-        window.pJSDom[0].fn.vendors &&
-        typeof window.pJSDom[0].fn.vendors.destroypJS === "function"
-      ) {
-        window.pJSDom[0].fn.vendors.destroypJS();
-        window.pJSDom = [];
+    // 📜 Load particles.js
+    const script = document.createElement("script");
+    script.src = "/particles.js";
+    script.async = true;
+    script.onload = () => {
+      if (window.particlesJS) {
+        window.particlesJS.load("particles-js", "/particles.json", () => {
+          console.log("particles.js config loaded");
+        });
       }
-    }, 100);
-  };
-}, [images.length]);
+    };
+    document.body.appendChild(script);
 
+    // 🧹 Cleanup
+    return () => {
+      clearInterval(interval);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
 
+      // Destroy particles safely
+      setTimeout(() => {
+        if (
+          window.pJSDom &&
+          window.pJSDom.length > 0 &&
+          window.pJSDom[0].fn &&
+          window.pJSDom[0].fn.vendors &&
+          typeof window.pJSDom[0].fn.vendors.destroypJS === "function"
+        ) {
+          window.pJSDom[0].fn.vendors.destroypJS();
+          window.pJSDom = [];
+        }
+      }, 100);
+    };
+  }, [images.length]);
 
   return (
     <div className="flex flex-col">
@@ -102,12 +99,13 @@ export default function Home() {
             }`}
           />
         ))}
-        {/* Particles.js container - positioned only on the background image */}
+        {/* Particles.js container */}
         <div id="particles-js" className="absolute inset-0 z-10"></div>
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center p-4">
           <h1 className="font-headline text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-            Transforming Business <span className="text-orange-400"> Technology Solutions</span>
+            Transforming Business{" "}
+            <span className="text-orange-400"> Technology Solutions</span>
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-neutral-200 md:text-xl">
             We deliver cutting-edge telecom infrastructure, GIS solutions, and
@@ -184,8 +182,8 @@ export default function Home() {
               </p>
               <div className="mt-8 grid grid-cols-1 gap-8 text-center sm:grid-cols-3">
                 {METRICS.map((metric) => (
-                  <div
-                    key={metric.label}
+                  <Card
+                    key={metric.label} // ✅ key moved to Card
                     className="rounded-lg p-6 glassmorphism transition-all duration-300 hover:shadow-glow"
                   >
                     <p className="font-headline text-4xl sm:text-5xl font-extrabold text-primary">
@@ -194,7 +192,7 @@ export default function Home() {
                     <p className="mt-2 text-base sm:text-lg font-medium text-muted-foreground">
                       {metric.label}
                     </p>
-                  </div>
+                  </Card>
                 ))}
               </div>
             </div>
