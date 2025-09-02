@@ -254,8 +254,8 @@ export const TESTIMONIALS = [
 
 export const TEAM_MEMBERS = [
   {
-    name: 'Santanu Das',
-    role: 'Founder & CEO',
+    name: 'Santanu Kumar',
+    role: 'CEO',
     bio: 'A visionary leader with over 20 years of experience in the technology sector, driving innovation and strategic growth.',
     avatarUrl: '',
   },
@@ -275,7 +275,7 @@ export const TEAM_MEMBERS = [
     name: 'M.K Sukumar',
     role: 'Technical Head',
     bio: 'Passionate about education and empowerment, Isha designs and oversees our impactful training programs.',
-    avatarUrl: 'https://picsum.photos/200/200?random=8',
+    avatarUrl: '',
   },
 ];
 
