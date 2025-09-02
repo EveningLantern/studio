@@ -107,7 +107,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center p-4">
           <h1 className="font-headline text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-            Transforming Business Through Technology
+            Transforming Business <span className="text-orange-400"> Technology Solutions</span>
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-neutral-200 md:text-xl">
             We deliver cutting-edge telecom infrastructure, GIS solutions, and
