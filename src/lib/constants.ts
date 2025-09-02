@@ -256,25 +256,25 @@ export const TEAM_MEMBERS = [
   {
     name: 'Santanu Kumar',
     role: 'CEO',
-    bio: 'A visionary leader with over 20 years of experience in the technology sector, driving innovation and strategic growth.',
+    bio: 'A visionary leader with over 10 years of experience in the technology sector, driving innovation and strategic growth.',
     avatarUrl: '',
   },
   {
     name: 'Tapas Chakroborty',
     role: 'CFO',
-    bio: 'An expert in network architecture and geospatial technologies, Diya leads our technical teams to deliver excellence.',
+    bio: 'Skilled in developing robust financial models, budgets, and forecasts to guide business decisions and optimize resource allocation.',
     avatarUrl: '',
   },
   {
     name: 'Sandy Dias',
     role: 'HR',
-    bio: 'Rohan is dedicated to building strong client relationships and identifying new opportunities for strategic partnerships.',
+    bio: 'Expert in end-to-end recruitment, from sourcing top talent to optimizing the hiring and onboarding experience.',
     avatarUrl: '',
   },
    {
     name: 'M.K Sukumar',
     role: 'Technical Head',
-    bio: 'Passionate about education and empowerment, Isha designs and oversees our impactful training programs.',
+    bio: 'Expert in leading and mentoring engineering teams, fostering a culture of technical excellence and continuous improvement.',
     avatarUrl: '',
   },
 ];
