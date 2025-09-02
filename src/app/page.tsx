@@ -47,7 +47,7 @@ export default function Home() {
     setIndex((prev) => (prev + 1) % images.length);
   }, 5000);
 
-  // 📜 Create script element to load particles.js
+  // 📜 Load particles.js
   const script = document.createElement("script");
   script.src = "/particles.js";
   script.async = true;
@@ -58,25 +58,31 @@ export default function Home() {
       });
     }
   };
-  script.onerror = () => {
-    console.error("Failed to load particles.js");
-  };
   document.body.appendChild(script);
 
-  // 🧹 Cleanup when component unmounts
+  // 🧹 Cleanup
   return () => {
     clearInterval(interval);
-    document.body.removeChild(script);
+    if (document.body.contains(script)) {
+      document.body.removeChild(script);
+    }
 
-    // Ensure particles is destroyed safely
+    // Destroy particles safely
     setTimeout(() => {
-      if (window.pJSDom && window.pJSDom.length > 0) {
+      if (
+        window.pJSDom &&
+        window.pJSDom.length > 0 &&
+        window.pJSDom[0].fn &&
+        window.pJSDom[0].fn.vendors &&
+        typeof window.pJSDom[0].fn.vendors.destroypJS === "function"
+      ) {
         window.pJSDom[0].fn.vendors.destroypJS();
         window.pJSDom = [];
       }
     }, 100);
   };
 }, [images.length]);
+
 
 
   return (
