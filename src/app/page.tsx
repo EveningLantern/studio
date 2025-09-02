@@ -28,6 +28,13 @@ import hero2 from "../assets/homet2.jpg";
 import hero3 from "../assets/homet3.jpg";
 import hero4 from "../assets/homet4.jpg";
 
+declare global {
+  interface Window {
+    particlesJS: any;
+    pJSDom: any[];
+  }
+}
+
 const images = [hero1, hero2, hero3, hero4];
 
 export default function Home() {
@@ -35,11 +42,42 @@ export default function Home() {
 
   // Rotate background every 5 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % images.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  // ⏱️ Rotate background every 5 seconds
+  const interval = setInterval(() => {
+    setIndex((prev) => (prev + 1) % images.length);
+  }, 5000);
+
+  // 📜 Create script element to load particles.js
+  const script = document.createElement("script");
+  script.src = "/particles.js";
+  script.async = true;
+  script.onload = () => {
+    if (window.particlesJS) {
+      window.particlesJS.load("particles-js", "/particles.json", () => {
+        console.log("particles.js config loaded");
+      });
+    }
+  };
+  script.onerror = () => {
+    console.error("Failed to load particles.js");
+  };
+  document.body.appendChild(script);
+
+  // 🧹 Cleanup when component unmounts
+  return () => {
+    clearInterval(interval);
+    document.body.removeChild(script);
+
+    // Ensure particles is destroyed safely
+    setTimeout(() => {
+      if (window.pJSDom && window.pJSDom.length > 0) {
+        window.pJSDom[0].fn.vendors.destroypJS();
+        window.pJSDom = [];
+      }
+    }, 100);
+  };
+}, [images.length]);
+
 
   return (
     <div className="flex flex-col">
@@ -58,7 +96,8 @@ export default function Home() {
             }`}
           />
         ))}
-
+        {/* Particles.js container - positioned only on the background image */}
+        <div id="particles-js" className="absolute inset-0 z-10"></div>
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center p-4">
           <h1 className="font-headline text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
