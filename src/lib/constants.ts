@@ -267,7 +267,7 @@ export const TEAM_MEMBERS = [
     name: 'M.K Sukumar',
     role: 'Technical Head',
     bio: 'Passionate about education and empowerment, Isha designs and oversees our impactful training programs.',
-    avatarUrl: 'https://picsum.photos/200/200?random=8',
+    avatarUrl: '',
   },
 ];
 
