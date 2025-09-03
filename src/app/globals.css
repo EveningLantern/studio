@@ -65,7 +65,11 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(170deg, hsl(0, 0%, 100%) 0%, hsl(0, 0%, 95%) 50%, hsl(0, 0%, 90%) 100%);
+    background-image: url('../../public/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center center;
   }
 }
 
@@ -74,10 +78,10 @@
     @apply bg-card/60 backdrop-blur-lg border border-white/10;
   }
   .animate-page-in {
-    animation: page-in 0.75s cubic-bezier(0.3, 0.8, 0.2, 1) forwards;
+    animation: page-in 0.5s cubic-bezier(0.3, 0.8, 0.2, 1) forwards;
   }
   .animate-page-out {
-    animation: page-out 0.75s cubic-bezier(0.3, 0.8, 0.2, 1) forwards;
+    animation: page-out 0.5s cubic-bezier(0.3, 0.8, 0.2, 1) forwards;
   }
 
   .cut-corner {
@@ -115,22 +119,52 @@
   @keyframes page-in {
     0% {
       opacity: 0;
-      transform: translateX(100%);
+      transform: translateY(20px);
     }
     100% {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateY(0);
     }
   }
 
   @keyframes page-out {
     0% {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateY(0);
     }
     100% {
       opacity: 0;
-      transform: translateX(-100%);
+      transform: translateY(-20px);
     }
+  }
+
+  /* Stacking Cards Styles */
+  .stackingcards-container {
+    padding: 10rem 5rem 50rem 5rem;
+    width: 100%;
+  }
+
+  .stackingcards {
+    color: white;
+    position: relative;
+  }
+
+  .stackingcard {
+    border: 1px solid #000000;
+    background-color: #cacaca;
+    color: #020202;
+    height: 20rem;
+    width: 100%;
+    border-radius: 3rem;
+    margin: 30px 0;
+    transform-origin: top center;
+    padding: 5rem;
+    box-sizing: border-box;
+  }
+
+  .end-element {
+    width: 100%;
+    height: 1px;
+    border-top: 1px solid red;
   }
 }

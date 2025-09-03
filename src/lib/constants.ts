@@ -1,3 +1,4 @@
+
 import {
   TowerControl,
   Globe,
@@ -8,8 +9,9 @@ import {
   Mail,
   MapPin,
   Facebook,
-  Twitter,
   Linkedin,
+  Youtube,
+  Instagram,
   Home,
   Briefcase,
   Info,
@@ -18,6 +20,30 @@ import {
   User,
   LayoutDashboard,
 } from 'lucide-react';
+import type { StaticImageData } from 'next/image';
+import partner1 from '../assets/carousel/partner1.jpg';
+import partner2 from '../assets/carousel/partner2.jpeg';
+import partner3 from '../assets/carousel/partner3.png';
+import partner4 from '../assets/carousel/partner4.jpeg';
+import partner5 from '../assets/carousel/partner5.jpeg';
+import partner6 from '../assets/carousel/partner6.png';
+import partner7 from '../assets/carousel/partner7.jpeg';
+import partner8 from '../assets/carousel/partner8.jpeg';
+import partner9 from '../assets/carousel/partner9.jpeg';
+import partner10 from '../assets/carousel/partner10.png';
+import partner11 from '../assets/carousel/partner11.jpeg';
+import partner12 from '../assets/carousel/partner12.jpeg';
+import service1 from '../assets/service1.jpg'
+import service2 from '../assets/service 2.jpg'
+import service3 from '../assets/service 3.jpg'
+import service4 from '../assets/service 4.jpg'
+import homet1 from '../assets/homet1.jpg'
+import homet2 from '../assets/homet2.jpg'
+import homet3 from '../assets/homet3.jpg'
+import homet4 from '../assets/homet4.jpg'
+
+
+
 
 type NavLink = {
   href: string;
@@ -44,7 +70,7 @@ export const NAV_LINKS: NavLink[] = [
   },
   { href: '/about', label: 'About Us', icon: Info },
   { href: '/blog', label: 'Blog', icon: BookOpen },
-  { href: '/gallery', label: 'Gallery', icon: ImageIcon },
+  { href: '/gallery', label: 'Life at Digital Indian', icon: ImageIcon },
   { href: '/career', label: 'Career', icon: User },
   { href: '/contact', label: 'Contact', icon: Mail },
 ];
@@ -61,8 +87,9 @@ type Service = {
   title: string;
   description: string;
   icon: LucideIcon;
+  image: StaticImageData; // added image property
   details: {
-    heroImage: string;
+    heroImage: StaticImageData;
     heroTitle: string;
     heroSubtitle: string;
     sections: {
@@ -79,8 +106,9 @@ export const SERVICES: Service[] = [
     title: 'Telecom Infrastructure',
     description: 'Designing, deploying, and maintaining robust and scalable telecom networks.',
     icon: TowerControl,
+    image: service1,
     details: {
-      heroImage: 'https://picsum.photos/1200/400?random=1',
+      heroImage: service1,
       heroTitle: 'Advanced Telecom Infrastructure',
       heroSubtitle: 'Building the backbone of modern communication with cutting-edge technology and expertise.',
       sections: [
@@ -105,10 +133,11 @@ export const SERVICES: Service[] = [
   {
     slug: 'geospatial-gis',
     title: 'Geospatial & GIS',
-    description: 'Leveraging spatial data to provide powerful insights for planning and decision-making.',
+    description: 'Advanced utility mapping, remote sensing, and spatial data analytics for informed decision-making.',
     icon: Globe,
+    image: service2,
     details: {
-      heroImage: 'https://picsum.photos/1200/400?random=2',
+      heroImage: service2,
       heroTitle: 'Intelligent Geospatial & GIS Solutions',
       heroSubtitle: 'Transforming complex location data into actionable intelligence for strategic advantage.',
       sections: [
@@ -133,10 +162,11 @@ export const SERVICES: Service[] = [
   {
     slug: 'skill-development',
     title: 'Skill Development',
-    description: 'Empowering the workforce with industry-relevant skills for the digital economy.',
+    description: 'Industry-focused training programs in telecom and GIS with government and corporate partnerships.',
     icon: GraduationCap,
+    image: service3,
     details: {
-      heroImage: 'https://picsum.photos/1200/400?random=3',
+      heroImage: service3,
       heroTitle: 'Future-Ready Skill Development',
       heroSubtitle: 'Bridging the talent gap with targeted training programs and certifications.',
       sections: [
@@ -161,10 +191,11 @@ export const SERVICES: Service[] = [
   {
     slug: 'business-consultancy',
     title: 'Business Consultancy',
-    description: 'Providing strategic guidance to help businesses navigate the complexities of the market.',
+    description: 'Comprehensive startup support including handholding, seed funding, and business compliance services.',
     icon: Users,
+    image: service4,
     details: {
-      heroImage: 'https://picsum.photos/1200/400?random=4',
+      heroImage: service4,
       heroTitle: 'Strategic Business Consultancy',
       heroSubtitle: 'Driving transformation and growth with expert advice and innovative strategies.',
       sections: [
@@ -195,10 +226,18 @@ export const METRICS = [
 ];
 
 export const PARTNERS = [
-  { name: 'Skill India', logoUrl: 'https://picsum.photos/150/50?random=11' },
-  { name: 'NASSCOM', logoUrl: 'https://picsum.photos/150/50?random=12' },
-  { name: 'Startup India', logoUrl: 'https://picsum.photos/150/50?random=13' },
-  { name: 'Digital India', logoUrl: 'https://picsum.photos/150/50?random=14' },
+    { name: 'Partner 1', logo: partner1 },
+    { name: 'Partner 2', logo: partner2 },
+    { name: 'Partner 3', logo: partner3 },
+    { name: 'Partner 4', logo: partner4 },
+    { name: 'Partner 5', logo: partner5 },
+    { name: 'Partner 6', logo: partner6 },
+    { name: 'Partner 7', logo: partner7},
+    { name: 'Partner 8', logo: partner8 },
+    { name: 'Partner 9', logo: partner9 },
+    { name: 'Partner 10', logo: partner10 },
+    { name: 'Partner 11', logo: partner11 },
+    { name: 'Partner 12', logo: partner12 }
 ];
 
 export const TESTIMONIALS = [
@@ -221,40 +260,41 @@ export const TESTIMONIALS = [
 
 export const TEAM_MEMBERS = [
   {
-    name: 'Aarav Patel',
-    role: 'Founder & CEO',
-    bio: 'A visionary leader with over 20 years of experience in the technology sector, driving innovation and strategic growth.',
-    avatarUrl: 'https://picsum.photos/200/200?random=5',
+    name: 'Santanu Kumar',
+    role: 'CEO',
+    bio: 'A visionary leader with over 10 years of experience in the technology sector, driving innovation and strategic growth.',
+    avatarUrl: '',
   },
   {
-    name: 'Diya Mehta',
-    role: 'Chief Technology Officer',
-    bio: 'An expert in network architecture and geospatial technologies, Diya leads our technical teams to deliver excellence.',
-    avatarUrl: 'https://picsum.photos/200/200?random=6',
+    name: 'Tapas Chakroborty',
+    role: 'CFO',
+    bio: 'Skilled in developing robust financial models, budgets, and forecasts to guide business decisions and optimize resource allocation.',
+    avatarUrl: '',
   },
   {
-    name: 'Rohan Joshi',
-    role: 'Head of Business Development',
-    bio: 'Rohan is dedicated to building strong client relationships and identifying new opportunities for strategic partnerships.',
-    avatarUrl: 'https://picsum.photos/200/200?random=7',
+    name: 'Sandy Dias',
+    role: 'HR',
+    bio: 'Expert in end-to-end recruitment, from sourcing top talent to optimizing the hiring and onboarding experience.',
+    avatarUrl: '',
   },
    {
-    name: 'Isha Gupta',
-    role: 'Director of Skill Development',
-    bio: 'Passionate about education and empowerment, Isha designs and oversees our impactful training programs.',
-    avatarUrl: 'https://picsum.photos/200/200?random=8',
+    name: 'M.K Sukumar',
+    role: 'Technical Head',
+    bio: 'Expert in leading and mentoring engineering teams, fostering a culture of technical excellence and continuous improvement.',
+    avatarUrl: '',
   },
 ];
 
 
 export const CONTACT_DETAILS = {
-  address: "123 Tech Park, Innovation Drive, Bangalore, 560100, India",
-  phone: "+91 98765 43210",
-  email: "contact@digitalindian.co.in",
+  address: "EN-9, Salt Lake, Sec-5, Kolkata-700091",
+  phone: "+91 7908735132",
+  email: "info@digitalindian.co.in",
 };
 
 export const SOCIAL_LINKS = [
-    { name: 'Facebook', icon: Facebook, href: '#' },
-    { name: 'Twitter', icon: Twitter, href: '#' },
-    { name: 'LinkedIn', icon: Linkedin, href: '#' },
+    { name: 'Facebook', icon: Facebook, href: 'https://www.facebook.com/digitalindian.org/' },
+    { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/company/digitalindian/?originalSubdomain=in' },
+    { name: 'Youtube', icon: Youtube, href: 'https://www.youtube.com/channel/UCwLQPtIouPQA_pfWsxAr1Aw' },
+    { name: 'Instagram', icon: Instagram, href: 'https://www.instagram.com/digital_indian16' },
 ];

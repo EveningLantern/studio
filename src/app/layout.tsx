@@ -1,6 +1,6 @@
+
 'use client';
 
-import type { Metadata } from 'next';
 import { Poppins, Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -12,26 +12,21 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Logo } from '@/components/Logo';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Chatbot from '@/components/Chatbot';
+import LoadingScreen from '@/components/Loading';
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['400', '700', '800'],
   variable: '--font-headline',
 });
+
+
 
 const fontInter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-body',
 });
-
-// export const metadata: Metadata = {
-//   title: 'Digital Indian: Empowering Tech Solutions',
-//   description: 'An elegant, modern, and trustworthy website for the technology solutions provider Digital Indian.',
-//   icons: {
-//     icon: '/favicon.ico',
-//   },
-// };
 
 export default function RootLayout({
   children,
@@ -57,26 +52,32 @@ export default function RootLayout({
       setAnimationClass('animate-page-out');
       const timer = setTimeout(() => {
         setPageKey(pathname);
-        setAnimationClass('animate-in');
-      }, 750);
+        setAnimationClass('animate-page-in');
+      }, 500); // Reduced animation time
       return () => clearTimeout(timer);
     }
   }, [pathname, pageKey]);
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>Digital Indian</title>
+        <meta name="description" content="An elegant, modern, and trustworthy website for the technology solutions provider Digital Indian." />
+        <link rel="icon" href="..//logo.ico" type="image/x-icon" />
+      </head>
       <body
         className={cn(
-          'min-h-screen bg-background font-body antialiased',
+          'min-h-screen font-body antialiased',
           fontPoppins.variable,
           fontInter.variable
         )}
       >
+        <LoadingScreen />
         <AuthProvider>
-          <div className="relative flex min-h-dvh flex-col bg-background">
+          <div className="relative flex min-h-dvh flex-col pt-[40px]">
             <div className={cn(
-                "fixed top-0 left-0 z-50 transition-all duration-300",
-                scrolled ? "p-4" : "p-4 md:p-6 lg:p-8"
+                "fixed top-[-20px] left-[-3px] z-50 transition-all duration-300",
+                scrolled ? "p-8" : "p-6 md:p-6 lg:p-8"
               )}>
                 <Logo scrolled={scrolled} />
               </div>
@@ -90,7 +91,7 @@ export default function RootLayout({
                     animationClass
                   )}
                 >
-                  <div className={cn("cut-corner h-full w-full transition-all duration-300", !scrolled && "pt-12 md:pt-10")}>
+                  <div className={cn("cut-corner h-full w-full transition-all duration-300", !scrolled && "pt-0")}>
                     <ScrollArea className="h-full w-full rounded-2xl">
                       {children}
                     </ScrollArea>

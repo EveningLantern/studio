@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Footer } from '@/components/Footer';
-import { supabase } from '@/lib/supabase';
+import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Dialog,
@@ -25,6 +25,7 @@ export default function GalleryPage() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
+  const supabase = createSupabaseBrowserClient();
 
   useEffect(() => {
     const fetchGalleryItems = async () => {
@@ -43,16 +44,16 @@ export default function GalleryPage() {
     };
 
     fetchGalleryItems();
-  }, []);
+  }, [supabase]);
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <div className="text-center mb-16">
         <h1 className="font-headline text-4xl font-extrabold tracking-tight md:text-5xl">
-          Our Gallery
+          Life at Digital Indian
         </h1>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-          A visual journey through our projects, team culture, and the impact we're making.
+          A glimpse into our vibrant culture, collaborative team, and the moments that make us who we are.
         </p>
       </div>
 

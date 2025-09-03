@@ -18,7 +18,7 @@ export default function ServicesPage() {
           Our Core Services
         </h1>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-          We provide comprehensive solutions to drive growth and innovation in the digital age. Click on a service to learn more.
+        Comprehensive technology solutions designed to transform your business operations and drive sustainable growth.
         </p>
       </div>
 

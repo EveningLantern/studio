@@ -1,10 +1,11 @@
 import Image from 'next/image';
-import { TEAM_MEMBERS } from '@/lib/constants';
+import { TEAM_MEMBERS, SOCIAL_LINKS } from '@/lib/constants';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Footer } from '@/components/Footer';
+import about from "../../assets/about.jpg";
 
 export default function AboutPage() {
   return (
@@ -12,7 +13,7 @@ export default function AboutPage() {
       {/* Hero */}
       <section className="relative h-[50vh]">
         <Image
-          src="https://picsum.photos/1600/600"
+          src={about}
           alt="Our Team"
           data-ai-hint="team meeting"
           fill
@@ -22,14 +23,14 @@ export default function AboutPage() {
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white p-4">
           <h1 className="font-headline text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">About Digital Indian</h1>
           <p className="mt-4 max-w-3xl text-lg text-neutral-200">
-            Learn about our journey, our mission, and the passionate team driving innovation.
+          Leading the way in technology innovation with over 15 years of experience in delivering exceptional solutions across industries.
           </p>
         </div>
       </section>
       
       <div className="p-4 md:p-6 lg:p-8">
         {/* Mission & Vision */}
-        <section className="py-16 md:py-24">
+        <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
               <div>
@@ -48,8 +49,42 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* Explore More About Us */}
+        <section className="py-8 md:py-12">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="font-headline text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              Explore More About Us
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground mx-auto max-w-2xl">
+              Connect with us on social media for the latest updates, insights, and behind-the-scenes content.
+            </p>
+            <div className="mt-8 flex justify-center gap-6">
+  {SOCIAL_LINKS.map((social) => (
+    <Button
+      key={social.name}
+      variant="ghost"
+      asChild
+      className="rounded-full hover:bg-primary/20 p-6 h-auto w-auto"
+    >
+      <Link
+        href={social.href}
+        aria-label={social.name}
+        className="flex items-center justify-center"
+      >
+        {/* Force icon size here */}
+        <social.icon className="text-primary w=40 h=40" />
+      </Link>
+    </Button>
+  ))}
+</div>
+
+
+
+          </div>
+        </section>
+
         {/* Team Section */}
-        <section className="py-16 md:py-24">
+        <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
             <div className="mx-auto mb-12 max-w-3xl text-center">
               <h2 className="font-headline text-3xl font-bold tracking-tight text-foreground md:text-4xl">
@@ -80,7 +115,7 @@ export default function AboutPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 md:py-24">
+        <section className="py-8 md:py-12">
           <div className="container mx-auto px-4 text-center">
               <h2 className="font-headline text-3xl font-bold tracking-tight text-foreground md:text-4xl">
                 Join Our Journey
