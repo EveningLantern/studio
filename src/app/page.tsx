@@ -143,14 +143,17 @@ export default function Home() {
                 className="flex flex-col bg-transparent transition-all duration-300 hover:shadow-glow"
               >
                 <CardHeader className="flex-shrink-0">
-                  <div className="flex items-center gap-4">
-                    <div className="rounded-full bg-primary/20 p-3 text-primary">
-                      <service.icon className="h-6 w-6" />
-                    </div>
-                    <CardTitle className="font-headline text-xl leading-tight">
-                      {service.title}
-                    </CardTitle>
+                  <div className="relative h-48 w-full mb-4 rounded-lg overflow-hidden">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
+                  <CardTitle className="font-headline text-xl leading-tight">
+                    {service.title}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-grow">
                   <CardDescription>{service.description}</CardDescription>

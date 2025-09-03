@@ -20,6 +20,7 @@ import {
   User,
   LayoutDashboard,
 } from 'lucide-react';
+import type { StaticImageData } from 'next/image';
 import partner1 from '../assets/carousel/partner1.jpg';
 import partner2 from '../assets/carousel/partner2.jpeg';
 import partner3 from '../assets/carousel/partner3.png';
@@ -86,8 +87,9 @@ type Service = {
   title: string;
   description: string;
   icon: LucideIcon;
+  image: StaticImageData; // added image property
   details: {
-    heroImage: string;
+    heroImage: StaticImageData;
     heroTitle: string;
     heroSubtitle: string;
     sections: {
@@ -104,6 +106,7 @@ export const SERVICES: Service[] = [
     title: 'Telecom Infrastructure',
     description: 'Designing, deploying, and maintaining robust and scalable telecom networks.',
     icon: TowerControl,
+    image: service1,
     details: {
       heroImage: service1,
       heroTitle: 'Advanced Telecom Infrastructure',
@@ -132,6 +135,7 @@ export const SERVICES: Service[] = [
     title: 'Geospatial & GIS',
     description: 'Advanced utility mapping, remote sensing, and spatial data analytics for informed decision-making.',
     icon: Globe,
+    image: service2,
     details: {
       heroImage: service2,
       heroTitle: 'Intelligent Geospatial & GIS Solutions',
@@ -160,6 +164,7 @@ export const SERVICES: Service[] = [
     title: 'Skill Development',
     description: 'Industry-focused training programs in telecom and GIS with government and corporate partnerships.',
     icon: GraduationCap,
+    image: service3,
     details: {
       heroImage: service3,
       heroTitle: 'Future-Ready Skill Development',
@@ -188,6 +193,7 @@ export const SERVICES: Service[] = [
     title: 'Business Consultancy',
     description: 'Comprehensive startup support including handholding, seed funding, and business compliance services.',
     icon: Users,
+    image: service4,
     details: {
       heroImage: service4,
       heroTitle: 'Strategic Business Consultancy',
