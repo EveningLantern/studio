@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Logo } from '@/components/Logo';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Chatbot from '@/components/Chatbot';
+import LoadingScreen from '@/components/Loading';
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
@@ -71,6 +72,7 @@ export default function RootLayout({
           fontInter.variable
         )}
       >
+        <LoadingScreen />
         <AuthProvider>
           <div className="relative flex min-h-dvh flex-col pt-[40px]">
             <div className={cn(
