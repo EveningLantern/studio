@@ -57,33 +57,33 @@ export function ApplyModal({ isOpen, onClose, jobTitle }: ApplyModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] glassmorphism">
         <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">Apply for {jobTitle}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="font-headline text-2xl text-black-500">Apply for {jobTitle}</DialogTitle>
+          <DialogDescription className="text-black-600">
             Fill out the form below to submit your application. We look forward to hearing from you.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-6 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input id="name" name="name" required className="bg-input/50" />
+            <Label htmlFor="name" className="text-black-500 font-semibold">Full Name</Label>
+            <Input id="name" name="name" required className="bg-input/50 border-orange-300 focus:border-orange-500 text-green-700" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="email">Email Address</Label>
-            <Input id="email" name="email" type="email" required className="bg-input/50" />
+            <Label htmlFor="email" className="text-black-500 font-semibold">Email Address</Label>
+            <Input id="email" name="email" type="email" required className="bg-input/50 border-orange-300 focus:border-orange-500 text-green-700" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="message">Message (Optional)</Label>
-            <Textarea id="message" name="message" placeholder="Tell us why you're a great fit..." className="bg-input/50" />
+            <Label htmlFor="message" className="text-black-500 font-semibold">Message (Optional)</Label>
+            <Textarea id="message" name="message" placeholder="Tell us why you're a great fit..." className="bg-input/50 border-orange-300 focus:border-orange-500 text-green-700" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="resume">Resume (PDF, DOC, DOCX)</Label>
-            <Input id="resume" name="resume" type="file" required accept=".pdf,.doc,.docx" className="bg-input/50" />
+            <Label htmlFor="resume" className="text-black-500 font-semibold">Resume (PDF, DOC, DOCX)</Label>
+            <Input id="resume" name="resume" type="file" required accept=".pdf,.doc,.docx" className="bg-input/50 border-orange-300 focus:border-orange-500 text-green-700 file:text-orange-500 file:bg-orange-50" />
           </div>
           <DialogFooter>
-            <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting} className="text-orange-500 hover:text-orange-600 hover:bg-orange-50">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting} className="bg-orange-500 hover:bg-orange-600 text-white">
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isSubmitting ? 'Submitting...' : 'Submit Application'}
             </Button>

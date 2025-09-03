@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,6 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Footer } from '@/components/Footer';
 import { sendContactEmail } from './actions';
 import { useState } from 'react';
+import mapImage from '../../assets/map.png';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -120,6 +123,25 @@ export default function ContactPage() {
                                 <p>{CONTACT_DETAILS.email}</p>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Map Image */}
+                    <div className="mt-8">
+                        <Link
+                            href="https://www.google.com/maps/place/EN+BLOCK,+EN+-+9,+EN+Block,+Sector+V,+Bidhannagar,+Kolkata,+West+Bengal+700091/@22.5736047,88.4314241,622m/data=!3m1!1e3!4m6!3m5!1s0x3a0275afb2dd949b:0xcaff4cf09f3240cf!8m2!3d22.5736058!4d88.43239!16s%2Fg%2F11rkm75qlp"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block transition-transform hover:scale-105"
+                        >
+                            <Image
+                                src={mapImage}
+                                alt="Digital Indian Location Map - Click to view on Google Maps"
+                                className="rounded-lg shadow-lg w-full cursor-pointer"
+                                width={400}
+                                height={300}
+                                priority
+                            />
+                        </Link>
                     </div>
                 </CardContent>
             </Card>
