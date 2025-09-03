@@ -22,7 +22,7 @@ export default function AboutPage() {
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white p-4">
           <h1 className="font-headline text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">About Digital Indian</h1>
           <p className="mt-4 max-w-3xl text-lg text-neutral-200">
-            Learn about our journey, our mission, and the passionate team driving innovation.
+          Leading the way in technology innovation with over 15 years of experience in delivering exceptional solutions across industries.
           </p>
         </div>
       </section>

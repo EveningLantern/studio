@@ -1,0 +1,161 @@
+-- Create the 'gallery' table
+CREATE TABLE IF NOT EXISTS public.gallery (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    title text NOT NULL,
+    hint text NOT NULL,
+    image_url text NOT NULL,
+    CONSTRAINT gallery_pkey PRIMARY KEY (id)
+);
+
+-- Set up Row Level Security (RLS) for the 'gallery' table
+ALTER TABLE public.gallery ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Allow public read access to everyone
+CREATE POLICY "Allow public read access"
+ON public.gallery
+FOR SELECT
+USING (true);
+
+-- Policy: Allow insert access for authenticated users
+CREATE POLICY "Allow insert for authenticated users"
+ON public.gallery
+FOR INSERT
+WITH CHECK (auth.role() = 'authenticated');
+
+-- Policy: Allow update access for authenticated users (the ones who created the record)
+-- Note: This might be too restrictive depending on your needs. For a simple admin dashboard, you might prefer a service role.
+-- But for this example, we'll keep it to the user who created it.
+CREATE POLICY "Allow update for authenticated users"
+ON public.gallery
+FOR UPDATE
+USING (auth.uid() = (SELECT user_id FROM posts WHERE id = gallery.id))
+WITH CHECK (auth.uid() = (SELECT user_id FROM posts WHERE id = gallery.id));
+
+-- Policy: Allow delete access for authenticated users
+CREATE POLICY "Allow delete for authenticated users"
+ON public.gallery
+FOR DELETE
+USING (auth.uid() = (SELECT user_id FROM posts WHERE id = gallery.id));
+
+
+-- Set up Storage for 'gallery' images
+-- 1. Create a new bucket named 'gallery'
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('gallery', 'gallery', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Set up RLS policies for the 'gallery' bucket
+-- Policy: Allow public read access to images
+CREATE POLICY "Allow public read access on gallery"
+ON storage.objects
+FOR SELECT
+USING (bucket_id = 'gallery');
+
+-- Policy: Allow authenticated users to upload images
+CREATE POLICY "Allow insert for authenticated users on gallery"
+ON storage.objects
+FOR INSERT
+WITH CHECK (bucket_id = 'gallery' AND auth.role() = 'authenticated');
+
+-- Policy: Allow authenticated users to update their own images
+CREATE POLICY "Allow update for authenticated users on gallery"
+ON storage.objects
+FOR UPDATE
+USING (bucket_id = 'gallery' AND auth.uid() = owner);
+
+-- Policy: Allow authenticated users to delete their own images
+CREATE POLICY "Allow delete for authenticated users on gallery"
+ON storage.objects
+FOR DELETE
+USING (bucket_id = 'gallery' AND auth.uid() = owner);
+
+-- Create the 'posts' table for the blog
+CREATE TABLE IF NOT EXISTS public.posts (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    title text NOT NULL,
+    content text NOT NULL,
+    author text,
+    category text,
+    image_url text,
+    CONSTRAINT posts_pkey PRIMARY KEY (id)
+);
+
+-- Set up Row Level Security (RLS) for the 'posts' table
+ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Allow public read access to all posts
+CREATE POLICY "Allow public read access on posts"
+ON public.posts
+FOR SELECT
+USING (true);
+
+-- Policy: Allow authenticated users to insert posts
+CREATE POLICY "Allow insert for authenticated users on posts"
+ON public.posts
+FOR INSERT
+WITH CHECK (auth.role() = 'authenticated');
+
+-- Policy: Allow authenticated users to update posts
+CREATE POLICY "Allow update for authenticated users on posts"
+ON public.posts
+FOR UPDATE
+USING (auth.role() = 'authenticated')
+WITH CHECK (auth.role() = 'authenticated');
+
+-- Policy: Allow authenticated users to delete posts
+CREATE POLICY "Allow delete for authenticated users on posts"
+ON public.posts
+FOR DELETE
+USING (auth.role() = 'authenticated');
+
+-- Set up Storage for 'posts' images (thumbnails)
+-- 1. Create a new bucket named 'posts'
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('posts', 'posts', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Set up RLS policies for the 'posts' bucket
+-- Policy: Allow public read access to post images
+CREATE POLICY "Allow public read access on posts storage"
+ON storage.objects
+FOR SELECT
+USING (bucket_id = 'posts');
+
+-- Policy: Allow authenticated users to upload post images
+CREATE POLICY "Allow insert for authenticated users on posts storage"
+ON storage.objects
+FOR INSERT
+WITH CHECK (bucket_id = 'posts' AND auth.role() = 'authenticated');
+
+-- Policy: Allow authenticated users to update post images
+CREATE POLICY "Allow update for authenticated users on posts storage"
+ON storage.objects
+FOR UPDATE
+USING (bucket_id = 'posts' AND auth.uid() = owner);
+
+-- Policy: Allow authenticated users to delete post images
+CREATE POLICY "Allow delete for authenticated users on posts storage"
+ON storage.objects
+FOR DELETE
+USING (bucket_id = 'posts' AND auth.uid() = owner);
+
+-- Create the 'subscriptions' table
+CREATE TABLE IF NOT EXISTS public.subscriptions (
+    id bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    email text NOT NULL,
+    CONSTRAINT subscriptions_pkey PRIMARY KEY (id),
+    CONSTRAINT subscriptions_email_key UNIQUE (email)
+);
+
+-- Set up Row Level Security (RLS) for the 'subscriptions' table
+ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
+
+-- By default, RLS denies all access. We don't need to add a read policy
+-- if we only access this table via the service_role key from a server action,
+-- which is the secure and recommended approach.
+
+-- If you needed client-side access (not recommended for this use case),
+-- you would add specific policies here. For server-side only, this is sufficient.
